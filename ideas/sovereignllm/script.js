@@ -1,4 +1,4 @@
-/**
+﻿/**
  * SovereignLLM - Interactive Script
  * Form handling, animations, and UI interactions
  */
@@ -139,7 +139,7 @@ function initContactForm() {
     } catch (error) {
       submitBtn.classList.remove('loading');
       submitBtn.disabled = false;
-      showFormError(form, 'There was an error. Please try again.');
+      showFormError(form, error.message || 'There was an error. Please try again.');
     }
   });
 
@@ -219,8 +219,14 @@ function showFieldError(group, field, message) {
  * Show general form error
  */
 function showFormError(form, message) {
-  // Could add a general error display
-  console.error(message);
+  let errorEl = form.querySelector('.form-general-error');
+  if (!errorEl) {
+    errorEl = document.createElement('p');
+    errorEl.className = 'form-general-error';
+    errorEl.style.cssText = 'color:#ef4444;font-size:0.875rem;margin-top:0.5rem;text-align:center;';
+    form.querySelector('.btn-submit').insertAdjacentElement('afterend', errorEl);
+  }
+  errorEl.textContent = message;
 }
 
 /**
@@ -233,20 +239,22 @@ function clearFormErrors(form) {
 }
 
 /**
- * Simulate form submission (replace with actual API call)
+ * Submit form data to PHP handler
  */
-function simulateSubmission(form) {
-  return new Promise((resolve) => {
-    // Get form data
-    const formData = new FormData(form);
-    const data = Object.fromEntries(formData.entries());
+async function simulateSubmission(form) {
+  const formData = new FormData(form);
+  const data = Object.fromEntries(formData.entries());
 
-    // Log form data (in production, send to server)
-    console.log('Form submitted:', data);
-
-    // Simulate network delay
-    setTimeout(resolve, 1500);
+  const response = await fetch('submit.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
   });
+
+  const result = await response.json();
+  if (!result.ok) {
+    throw new Error(result.error || 'Submission failed');
+  }
 }
 
 /**
