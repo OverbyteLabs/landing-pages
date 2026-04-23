@@ -103,11 +103,22 @@ jobs:
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -p "$PORT" -H "$SERVER" >> ~/.ssh/known_hosts 2>/dev/null
 
+          echo "Server: $SERVER  Port: $PORT  User: $USERNAME"
+          echo "FQDN: $FQDN  IDEA: $IDEA"
+
+          # Test SSH connection first
+          ssh -i ~/.ssh/deploy_key -p "$PORT" \
+            -o StrictHostKeyChecking=no \
+            -o ConnectTimeout=10 \
+            -v \
+            "$USERNAME@$SERVER" \
+            "echo SSH_OK && mkdir -p ~/domains/$FQDN/public_html" 2>&1 || true
+
           REMOTE="$USERNAME@$SERVER:~/domains/$FQDN/public_html/"
           echo "Syncing ideas/$IDEA/ to $REMOTE"
 
           rsync -avz --delete \
-            -e "ssh -i ~/.ssh/deploy_key -p $PORT -o StrictHostKeyChecking=no" \
+            -e "ssh -i ~/.ssh/deploy_key -p $PORT -o StrictHostKeyChecking=no -o ConnectTimeout=10" \
             "./ideas/$IDEA/" \
             "$REMOTE"
 
