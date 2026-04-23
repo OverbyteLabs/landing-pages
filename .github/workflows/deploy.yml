@@ -97,6 +97,7 @@ jobs:
           USERNAME: ${{ secrets.HOSTINGER_USERNAME }}
           FQDN:     ${{ steps.vars.outputs.fqdn }}
           IDEA:     ${{ steps.vars.outputs.idea }}
+          SUB:      ${{ steps.vars.outputs.subdomain }}
         run: |
           mkdir -p ~/.ssh
           echo "$SSH_KEY" | base64 -d > ~/.ssh/deploy_key
@@ -112,9 +113,9 @@ jobs:
             -o ConnectTimeout=10 \
             -v \
             "$USERNAME@$SERVER" \
-            "echo SSH_OK && mkdir -p ~/domains/$FQDN/public_html" 2>&1 || true
+            "echo SSH_OK && mkdir -p ~/domains/$ROOT_DOMAIN/public_html/$SUB" 2>&1 || true
 
-          REMOTE="$USERNAME@$SERVER:~/domains/$FQDN/public_html/"
+          REMOTE="$USERNAME@$SERVER:~/domains/$ROOT_DOMAIN/public_html/$SUB/"
           echo "Syncing ideas/$IDEA/ to $REMOTE"
 
           rsync -avz --delete \
