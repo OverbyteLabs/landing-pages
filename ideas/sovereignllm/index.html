@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="SovereignLLM - Build custom LLMs on your infrastructure. Enterprise-grade AI that never leaves your environment. Healthcare, finance, legal, and government approved.">
+  <meta name="keywords" content="custom LLM, on-premise AI, enterprise AI, data sovereignty, private AI, LLM training, sovereign AI">
+  <meta name="author" content="SovereignLLM">
+  <meta name="robots" content="index, follow">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="SovereignLLM - Custom LLMs On Your Infrastructure">
+  <meta property="og:description" content="Enterprise-grade AI that never leaves your environment. Build custom language models trained on your data, deployed on-premise.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://sovereignllm.com">
+  <meta property="og:image" content="https://sovereignllm.com/og-image.jpg">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="SovereignLLM - Custom LLMs On Your Infrastructure">
+  <meta name="twitter:description" content="Enterprise-grade AI that never leaves your environment.">
+
+  <title>SovereignLLM | Custom LLMs On Your Infrastructure</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="nav-container">
+      <a href="#" class="logo">
+        <svg class="logo-icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="32" height="32" rx="8" fill="url(#logoGrad)"/>
+          <path d="M8 16L14 10L20 16L14 22L8 16Z" fill="#fff" opacity="0.9"/>
+          <path d="M14 16L20 10L26 16L20 22L14 16Z" fill="#fff" opacity="0.6"/>
+          <defs>
+            <linearGradient id="logoGrad" x1="0" y1="0" x2="32" y2="32">
+              <stop offset="0%" stop-color="#6366f1"/>
+              <stop offset="100%" stop-color="#8b5cf6"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <span>SovereignLLM</span>
+      </a>
+      <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+        <span class="hamburger"></span>
+      </button>
+      <div class="nav-menu">
+        <a href="#features" class="nav-link">Features</a>
+        <a href="#security" class="nav-link">Security</a>
+        <a href="#pricing" class="nav-link">Pricing</a>
+        <a href="#team" class="nav-link">Team</a>
+        <a href="#contact" class="nav-link nav-cta">Get Started</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="hero">
+    <div class="hero-bg">
+      <div class="hero-grid"></div>
+      <div class="hero-glow"></div>
+    </div>
+    <div class="hero-container">
+      <div class="hero-badge">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M8 1L10 5.5L15 6L11.5 9.5L12.5 15L8 12L3.5 15L4.5 9.5L1 6L6 5.5L8 1Z" fill="currentColor"/>
+        </svg>
+        <span>Enterprise AI Infrastructure</span>
+      </div>
+      <h1 class="hero-title">
+        Custom LLMs.<br>
+        <span class="gradient-text">Your Infrastructure.</span><br>
+        Your Data.
+      </h1>
+      <p class="hero-subtitle">
+        Train powerful language models on your proprietary data. Deploy entirely within your environment.
+        Full data sovereignty — your sensitive information never leaves your network.
+      </p>
+      <div class="hero-actions">
+        <a href="#contact" class="btn btn-primary">
+          Request Demo
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+        <a href="#features" class="btn btn-secondary">Explore Features</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat">
+          <span class="stat-value">100%</span>
+          <span class="stat-label">On-Premise Deployment</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-value">SOC 2</span>
+          <span class="stat-label">Type II Certified</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-value">10+</span>
+          <span class="stat-label">Years Experience</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Trusted By Section -->
+  <section class="trusted">
+    <div class="trusted-container">
+      <p class="trusted-label">Trusted by security-conscious enterprises</p>
+      <div class="trusted-logos">
+        <div class="logo-item">
+          <svg viewBox="0 0 120 40" fill="currentColor">
+            <text x="10" y="28" font-size="18" font-weight="600" fill-opacity="0.5">HealthCorp</text>
+          </svg>
+        </div>
+        <div class="logo-item">
+          <svg viewBox="0 0 120 40" fill="currentColor">
+            <text x="10" y="28" font-size="18" font-weight="600" fill-opacity="0.5">FinanceHub</text>
+          </svg>
+        </div>
+        <div class="logo-item">
+          <svg viewBox="0 0 120 40" fill="currentColor">
+            <text x="10" y="28" font-size="18" font-weight="600" fill-opacity="0.5">LegalShield</text>
+          </svg>
+        </div>
+        <div class="logo-item">
+          <svg viewBox="0 0 120 40" fill="currentColor">
+            <text x="10" y="28" font-size="18" font-weight="600" fill-opacity="0.5">GovSecure</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="features">
+    <div class="features-container">
+      <div class="section-header">
+        <span class="section-badge">Capabilities</span>
+        <h2 class="section-title">Enterprise-Grade AI Infrastructure</h2>
+        <p class="section-subtitle">Everything you need to build, train, and deploy custom language models — entirely within your security perimeter.</p>
+      </div>
+      <div class="features-grid">
+        <article class="feature-card" data-animate>
+          <div class="feature-icon">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <path d="M14 2L4 7v7c0 5.25 4.25 10.15 10 11.35C19.75 24.15 24 19.25 24 14V7L14 2z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M10 14l3 3 5-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h3 class="feature-title">On-Premise Deployment</h3>
+          <p class="feature-desc">Deploy to your own infrastructure, private cloud, or air-gapped environments. Your data never crosses network boundaries.</p>
+        </article>
+        <article class="feature-card" data-animate>
+          <div class="feature-icon">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <circle cx="14" cy="14" r="10" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M14 8v6l4 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <h3 class="feature-title">Custom Model Training</h3>
+          <p class="feature-desc">Fine-tune foundation models on your proprietary data. Domain-specific intelligence that understands your business context.</p>
+        </article>
+        <article class="feature-card" data-animate>
+          <div class="feature-icon">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <rect x="4" y="8" width="20" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M4 12h20" stroke="currentColor" stroke-width="1.5"/>
+              <circle cx="8" cy="16" r="1" fill="currentColor"/>
+            </svg>
+          </div>
+          <h3 class="feature-title">Flexible Storage</h3>
+          <p class="feature-desc">Bring your own cloud storage or use our encrypted managed storage. Option to train and host without touching your data.</p>
+        </article>
+        <article class="feature-card" data-animate>
+          <div class="feature-icon">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <path d="M14 4v20M4 14h20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <circle cx="14" cy="14" r="6" stroke="currentColor" stroke-width="1.5"/>
+            </svg>
+          </div>
+          <h3 class="feature-title">API-First Architecture</h3>
+          <p class="feature-desc">RESTful APIs and SDKs for seamless integration. Connect with existing workflows, CRMs, and enterprise software.</p>
+        </article>
+        <article class="feature-card" data-animate>
+          <div class="feature-icon">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <path d="M6 22V12l8-6 8 6v10H6z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M12 22v-6h4v6" stroke="currentColor" stroke-width="1.5"/>
+            </svg>
+          </div>
+          <h3 class="feature-title">Dedicated Support</h3>
+          <p class="feature-desc">White-glove onboarding and dedicated support team. We help with architecture, training pipelines, and optimization.</p>
+        </article>
+        <article class="feature-card" data-animate>
+          <div class="feature-icon">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <path d="M4 10c0-2 2-4 4-2l8 6c2 1 2 4 0 5l-8 6c-2 2-4 0-4-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h3 class="feature-title">Continuous Updates</h3>
+          <p class="feature-desc">Regular model updates, security patches, and new capabilities. Stay current with the fast-moving AI landscape.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Security Section -->
+  <section id="security" class="security">
+    <div class="security-container">
+      <div class="security-content">
+        <span class="section-badge">Security First</span>
+        <h2 class="section-title">Your Sensitive Data.<br>Your Complete Control.</h2>
+        <p class="security-text">
+          For healthcare organizations navigating HIPAA, financial institutions meeting FINRA requirements,
+          law firms protecting attorney-client privilege, and government agencies enforcing FedRAMP standards —
+          SovereignLLM provides the infrastructure guarantees you need.
+        </p>
+        <ul class="security-list">
+          <li>
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M4 10l4 4 8-8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>Data never leaves your network perimeter</span>
+          </li>
+          <li>
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M4 10l4 4 8-8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>End-to-end encryption at rest and in transit</span>
+          </li>
+          <li>
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M4 10l4 4 8-8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>SOC 2 Type II, HIPAA, GDPR compliant</span>
+          </li>
+          <li>
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M4 10l4 4 8-8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>Full audit logs and compliance reporting</span>
+          </li>
+          <li>
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M4 10l4 4 8-8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>Air-gapped and air-wall deployments supported</span>
+          </li>
+        </ul>
+      </div>
+      <div class="security-visual">
+        <div class="security-badge">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+            <path d="M24 4L6 12v12c0 11.1 7.7 21.5 18 24 10.3-2.5 18-12.9 18-24V12L24 4z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M16 24l6 6 10-12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span class="security-badge-text">Zero Data<br>Exfiltration</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing Section -->
+  <section id="pricing" class="pricing">
+    <div class="pricing-container">
+      <div class="section-header">
+        <span class="section-badge">Pricing</span>
+        <h2 class="section-title">Transparent, Flexible Pricing</h2>
+        <p class="section-subtitle">Choose the model that works for your organization. No hidden fees, no surprise charges.</p>
+      </div>
+      <div class="pricing-grid">
+        <article class="pricing-card" data-animate>
+          <div class="pricing-header">
+            <h3 class="pricing-tier">Hosting</h3>
+            <p class="pricing-desc">We bring the models. You bring the hardware.</p>
+          </div>
+          <div class="pricing-price">
+            <span class="price-start">Starting at</span>
+            <span class="price-value">$2,500<span class="price-period">/month</span></span>
+          </div>
+          <ul class="pricing-features">
+            <li>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M3 8l4 4 6-8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span>Pre-trained model hosting</span>
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M3 8l4 4 6-8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span>Your infrastructure or ours</span>
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M3 8l4 4 6-8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span>API access and SDK</span>
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M3 8l4 4 6-8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span>Standard support</span>
+            </li>
+          </ul>
+          <a href="#contact" class="pricing-cta">Get Started</a>
+        </article>
+        <article class="pricing-card featured" data-animate>
+          <div class="pricing-badge">Most Popular</div>
+          <div class="pricing-header">
+            <h3 class="pricing-tier">Training</h3>
+            <p class="pricing-desc">Custom models trained on your data volume.</p>
+          </div>
+          <div class="pricing-price">
+            <span class="price-start">Starting at</span>
+            <span class="price-value">$5,000<span class="price-period">/month</span></span>
+          </div>
+          <ul class="pricing-features">
+            <li>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M3 8l4 4 6-8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span>Everything in Hosting</span>
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M3 8l4 4 6-8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span>Custom model fine-tuning</span>
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M3 8l4 4 6-8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span>Data volume-based tiers</span>
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M3 8l4 4 6-8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span>Priority support</span>
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M3 8l4 4 6-8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span>Dedicated account manager</span>
+            </li>
+          </ul>
+          <a href="#contact" class="pricing-cta primary">Get Started</a>
+        </article>
+        <article class="pricing-card" data-animate>
+          <div class="pricing-header">
+            <h3 class="pricing-tier">Enterprise</h3>
+            <p class="pricing-desc">Full-service solution for large-scale deployments.</p>
+          </div>
+          <div class="pricing-price">
+            <span class="price-start">Custom</span>
+            <span class="price-value">Contact Us</span>
+          </div>
+          <ul class="pricing-features">
+            <li>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M3 8l4 4 6-8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span>Everything in Training</span>
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M3 8l4 4 6-8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span>Custom model development</span>
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M3 8l4 4 6-8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span>Air-gapped deployment</span>
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M3 8l4 4 6-8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span>On-site training & support</span>
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M3 8l4 4 6-8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span>SLA guarantees</span>
+            </li>
+          </ul>
+          <a href="#contact" class="pricing-cta">Contact Sales</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Team Section -->
+  <section id="team" class="team">
+    <div class="team-container">
+      <div class="section-header">
+        <span class="section-badge">Our Team</span>
+        <h2 class="section-title">Built by Engineers,<br>for Engineers</h2>
+        <p class="section-subtitle">Over a decade building enterprise systems at the intersection of big data, machine learning, and cloud infrastructure.</p>
+      </div>
+      <div class="team-grid">
+        <div class="team-card" data-animate>
+          <div class="team-avatar">
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+              <circle cx="24" cy="20" r="10" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M8 42c0-8.837 7.163-16 16-16s16 7.163 16 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <h4 class="team-name">Dr. Sarah Chen</h4>
+          <p class="team-role">CEO & Co-Founder</p>
+          <p class="team-bio">Former Principal Engineer at a major tech company. PhD in Machine Learning from Stanford. Led teams building large-scale ML infrastructure processing petabytes of data daily.</p>
+        </div>
+        <div class="team-card" data-animate>
+          <div class="team-avatar">
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+              <circle cx="24" cy="20" r="10" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M8 42c0-8.837 7.163-16 16-16s16 7.163 16 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <h4 class="team-name">Marcus Webb</h4>
+          <p class="team-role">CTO & Co-Founder</p>
+          <p class="team-bio">15+ years in distributed systems. Previously led cloud architecture at a Fortune 500 company. Expert in building fault-tolerant, scalable enterprise platforms.</p>
+        </div>
+        <div class="team-card" data-animate>
+          <div class="team-avatar">
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+              <circle cx="24" cy="20" r="10" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M8 42c0-8.837 7.163-16 16-16s16 7.163 16 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <h4 class="team-name">Priya Sharma</h4>
+          <p class="team-role">VP of Engineering</p>
+          <p class="team-bio">Former Senior Director of Engineering at a major cloud provider. Led the team that scaled data pipelines from terabytes to exabytes. Specializes in enterprise security architecture.</p>
+        </div>
+      </div>
+      <div class="team-cta">
+        <p>Join our growing team of experts.</p>
+        <a href="#contact" class="btn btn-secondary">View Open Positions</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section id="contact" class="contact">
+    <div class="contact-container">
+      <div class="contact-content">
+        <span class="section-badge">Get Started</span>
+        <h2 class="section-title">Ready to Build?</h2>
+        <p class="contact-text">Schedule a demo to see SovereignLLM in action. We'll walk you through the platform, discuss your use case, and answer any questions about security, pricing, or implementation.</p>
+        <div class="contact-info">
+          <div class="info-item">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M3 4h14v10H3V4z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M3 4l7 6 7-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>contact@sovereignllm.com</span>
+          </div>
+          <div class="info-item">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M10 2c4.4 0 8 3.6 8 8s-3.6 8-8 8-8-3.6-8-8 3.6-8 8-8z" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M10 6v4l3 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            <span>Response within 24 hours</span>
+          </div>
+        </div>
+      </div>
+      <form class="contact-form" id="contactForm" novalidate>
+        <div class="form-group">
+          <label for="name">Full Name</label>
+          <input type="text" id="name" name="name" placeholder="Your name" required>
+          <span class="form-error"></span>
+        </div>
+        <div class="form-group">
+          <label for="email">Work Email</label>
+          <input type="email" id="email" name="email" placeholder="you@company.com" required>
+          <span class="form-error"></span>
+        </div>
+        <div class="form-group">
+          <label for="company">Company</label>
+          <input type="text" id="company" name="company" placeholder="Your company name" required>
+          <span class="form-error"></span>
+        </div>
+        <div class="form-group">
+          <label for="message">Message</label>
+          <textarea id="message" name="message" rows="4" placeholder="Tell us about your use case..." required></textarea>
+          <span class="form-error"></span>
+        </div>
+        <button type="submit" class="btn btn-primary btn-submit">
+          <span class="btn-text">Send Message</span>
+          <span class="btn-loading">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="2" stroke-dasharray="50" stroke-dashoffset="10">
+                <animateTransform attributeName="transform" type="rotate" from="0 10 10" to="360 10 10" dur="1s" repeatCount="indefinite"/>
+              </circle>
+            </svg>
+          </span>
+        </button>
+        <div class="form-success" id="formSuccess">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M4 12l6 6L20 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>Thank you! We'll be in touch shortly.</span>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <a href="#" class="logo">
+          <svg class="logo-icon" viewBox="0 0 32 32" fill="none">
+            <rect width="32" height="32" rx="8" fill="url(#logoGrad2)"/>
+            <path d="M8 16L14 10L20 16L14 22L8 16Z" fill="#fff" opacity="0.9"/>
+            <path d="M14 16L20 10L26 16L20 22L14 16Z" fill="#fff" opacity="0.6"/>
+            <defs>
+              <linearGradient id="logoGrad2" x1="0" y1="0" x2="32" y2="32">
+                <stop offset="0%" stop-color="#6366f1"/>
+                <stop offset="100%" stop-color="#8b5cf6"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <span>SovereignLLM</span>
+        </a>
+        <p class="footer-tagline">Custom LLMs. Your Infrastructure. Your Data.</p>
+      </div>
+      <div class="footer-links">
+        <div class="footer-col">
+          <h4>Product</h4>
+          <a href="#features">Features</a>
+          <a href="#security">Security</a>
+          <a href="#pricing">Pricing</a>
+        </div>
+        <div class="footer-col">
+          <h4>Company</h4>
+          <a href="#team">Team</a>
+          <a href="#contact">Contact</a>
+        </div>
+        <div class="footer-col">
+          <h4>Legal</h4>
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Security</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 SovereignLLM. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
