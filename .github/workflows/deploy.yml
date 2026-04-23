@@ -41,52 +41,27 @@ jobs:
           echo "subdomain=$SUB" >> $GITHUB_OUTPUT
           echo "fqdn=$FQDN"     >> $GITHUB_OUTPUT
 
-      # 2. Pull hosting details from API
-      - name: Get hosting credentials
-        id: hosting
+      # 2. Create subdomain website entry (best-effort — skips if API is down)
+      - name: Create subdomain on Hostinger (if new)
+        continue-on-error: true
         env:
           TOKEN: ${{ secrets.HOSTINGER_TOKEN }}
-        run: |
-          HTTP=$(curl -s -o /tmp/sites.json -w "%{http_code}" \
-            -H "Authorization: Bearer $TOKEN" \
-            "$API/api/hosting/v1/websites?domain=$ROOT_DOMAIN")
-
-          echo "HTTP status: $HTTP"
-          cat /tmp/sites.json
-
-          if [ "$HTTP" != "200" ]; then
-            echo "ERROR: Hostinger API returned HTTP $HTTP"
-            exit 1
-          fi
-
-          # Extract system username from root_directory: /home/<user>/domains/...
-          ROOT_DIR=$(jq -r '.data[0].root_directory // empty' /tmp/sites.json)
-          ORDER_ID=$(jq -r '.data[0].order_id // empty'       /tmp/sites.json)
-          SYS_USER=$(echo "$ROOT_DIR" | cut -d'/' -f3)
-
-          if [ -z "$SYS_USER" ] || [ -z "$ORDER_ID" ]; then
-            echo "ERROR: Could not extract username or order_id from API response"
-            exit 1
-          fi
-
-          echo "order_id=$ORDER_ID" >> $GITHUB_OUTPUT
-          echo "username=$SYS_USER" >> $GITHUB_OUTPUT
-          echo "System user: $SYS_USER  Order: $ORDER_ID"
-
-      # 3. Create subdomain website entry (idempotent)
-      - name: Create subdomain on Hostinger (if new)
-        env:
-          TOKEN:    ${{ secrets.HOSTINGER_TOKEN }}
-          FQDN:     ${{ steps.vars.outputs.fqdn }}
-          ORDER_ID: ${{ steps.hosting.outputs.order_id }}
+          FQDN:  ${{ steps.vars.outputs.fqdn }}
         run: |
           HTTP=$(curl -s -o /tmp/existing.json -w "%{http_code}" \
             -H "Authorization: Bearer $TOKEN" \
-            "$API/api/hosting/v1/websites?domain=$FQDN")
+            "$API/api/hosting/v1/websites?domain=$ROOT_DOMAIN")
 
-          COUNT=$(jq '.data | length' /tmp/existing.json 2>/dev/null || echo 0)
+          if [ "$HTTP" != "200" ]; then
+            echo "WARNING: Hostinger API returned HTTP $HTTP - skipping subdomain creation"
+            exit 0
+          fi
 
-          if [ "$COUNT" = "0" ]; then
+          ORDER_ID=$(jq -r '.data[0].order_id // empty' /tmp/existing.json)
+          COUNT=$(curl -s -H "Authorization: Bearer $TOKEN" \
+            "$API/api/hosting/v1/websites?domain=$FQDN" | jq '.data | length' 2>/dev/null || echo 0)
+
+          if [ "$COUNT" = "0" ] && [ -n "$ORDER_ID" ]; then
             echo "Creating website entry for $FQDN..."
             curl -s -X POST "$API/api/hosting/v1/websites" \
               -H "Authorization: Bearer $TOKEN" \
@@ -95,11 +70,12 @@ jobs:
             echo "Waiting 20s for subdomain provisioning..."
             sleep 20
           else
-            echo "Website $FQDN already exists - skipping creation"
+            echo "Website $FQDN already exists or order_id unavailable - skipping"
           fi
 
-      # 4. Upsert DNS CNAME record
+      # 3. Upsert DNS CNAME record (best-effort — skips if API is down)
       - name: Set DNS CNAME for subdomain
+        continue-on-error: true
         env:
           TOKEN: ${{ secrets.HOSTINGER_TOKEN }}
           SUB:   ${{ steps.vars.outputs.subdomain }}
@@ -109,17 +85,16 @@ jobs:
             -H "Authorization: Bearer $TOKEN" \
             -H "Content-Type: application/json" \
             -d "{\"overwrite\": false, \"zone\": [{\"name\": \"$SUB\", \"ttl\": 300, \"type\": \"CNAME\", \"records\": [{\"content\": \"$ROOT_DOMAIN.\"}]}]}")
-
           echo "DNS HTTP status: $HTTP"
           cat /tmp/dns.json
 
-      # 5. Rsync files to hosting
+      # 4. Rsync files to hosting
       - name: Deploy files via rsync
         env:
           SSH_KEY:  ${{ secrets.DEPLOY_SSH_KEY }}
           SERVER:   ${{ secrets.HOSTINGER_SSH_HOST }}
           PORT:     ${{ secrets.HOSTINGER_SSH_PORT }}
-          USERNAME: ${{ steps.hosting.outputs.username }}
+          USERNAME: ${{ secrets.HOSTINGER_USERNAME }}
           FQDN:     ${{ steps.vars.outputs.fqdn }}
           IDEA:     ${{ steps.vars.outputs.idea }}
         run: |
