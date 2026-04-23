@@ -8,7 +8,7 @@ on:
         required: true
         type: string
       subdomain:
-        description: 'Subdomain override — defaults to folder name (e.g. my-app → my-app.overbytelabs.com)'
+        description: 'Subdomain override - defaults to folder name'
         required: false
         type: string
 
@@ -24,7 +24,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # ── 1. Resolve names ───────────────────────────────────────────────────
+      # 1. Resolve names
       - name: Resolve subdomain and paths
         id: vars
         run: |
@@ -37,96 +37,87 @@ jobs:
             exit 1
           fi
 
-          echo "idea=$IDEA"       >> $GITHUB_OUTPUT
-          echo "subdomain=$SUB"   >> $GITHUB_OUTPUT
-          echo "fqdn=$FQDN"       >> $GITHUB_OUTPUT
+          echo "idea=$IDEA"     >> $GITHUB_OUTPUT
+          echo "subdomain=$SUB" >> $GITHUB_OUTPUT
+          echo "fqdn=$FQDN"     >> $GITHUB_OUTPUT
 
-      # ── 2. Pull hosting details from API ──────────────────────────────────
-      - name: Get hosting server + credentials
+      # 2. Pull hosting details from API
+      - name: Get hosting credentials
         id: hosting
         env:
           TOKEN: ${{ secrets.HOSTINGER_TOKEN }}
         run: |
-          # Find the hosting order
-          ORDERS=$(curl -sf \
-            -H "Authorization: Bearer $TOKEN" \
-            "$API/api/hosting/v1/orders")
-          ORDER_ID=$(echo "$ORDERS" | jq -r '.data[0].id')
-
-          # Find server details from the root domain website
-          SITES=$(curl -sf \
+          HTTP=$(curl -s -o /tmp/sites.json -w "%{http_code}" \
             -H "Authorization: Bearer $TOKEN" \
             "$API/api/hosting/v1/websites?domain=$ROOT_DOMAIN")
 
-          # Hostinger returns server_hostname or host depending on plan type
-          SERVER=$(echo   "$SITES" | jq -r '.data[0].server_hostname // .data[0].host // empty')
-          USERNAME=$(echo "$SITES" | jq -r '.data[0].username // empty')
+          echo "HTTP status: $HTTP"
+          cat /tmp/sites.json
 
-          if [ -z "$SERVER" ] || [ -z "$USERNAME" ]; then
-            echo "ERROR: Could not resolve server/username. Check your HOSTINGER_TOKEN and domain."
-            echo "API response: $SITES"
+          if [ "$HTTP" != "200" ]; then
+            echo "ERROR: Hostinger API returned HTTP $HTTP"
+            exit 1
+          fi
+
+          # Extract system username from root_directory: /home/<user>/domains/...
+          ROOT_DIR=$(jq -r '.data[0].root_directory // empty' /tmp/sites.json)
+          ORDER_ID=$(jq -r '.data[0].order_id // empty'       /tmp/sites.json)
+          SYS_USER=$(echo "$ROOT_DIR" | cut -d'/' -f3)
+
+          if [ -z "$SYS_USER" ] || [ -z "$ORDER_ID" ]; then
+            echo "ERROR: Could not extract username or order_id from API response"
             exit 1
           fi
 
           echo "order_id=$ORDER_ID" >> $GITHUB_OUTPUT
-          echo "server=$SERVER"     >> $GITHUB_OUTPUT
-          echo "username=$USERNAME" >> $GITHUB_OUTPUT
-          echo "Deploying to $USERNAME@$SERVER"
+          echo "username=$SYS_USER" >> $GITHUB_OUTPUT
+          echo "System user: $SYS_USER  Order: $ORDER_ID"
 
-      # ── 3. Create subdomain website entry (idempotent) ────────────────────
+      # 3. Create subdomain website entry (idempotent)
       - name: Create subdomain on Hostinger (if new)
         env:
           TOKEN:    ${{ secrets.HOSTINGER_TOKEN }}
           FQDN:     ${{ steps.vars.outputs.fqdn }}
           ORDER_ID: ${{ steps.hosting.outputs.order_id }}
         run: |
-          EXISTING=$(curl -sf \
+          HTTP=$(curl -s -o /tmp/existing.json -w "%{http_code}" \
             -H "Authorization: Bearer $TOKEN" \
             "$API/api/hosting/v1/websites?domain=$FQDN")
-          COUNT=$(echo "$EXISTING" | jq '.data | length')
+
+          COUNT=$(jq '.data | length' /tmp/existing.json 2>/dev/null || echo 0)
 
           if [ "$COUNT" = "0" ]; then
             echo "Creating website entry for $FQDN..."
-            RESULT=$(curl -sf -X POST \
-              "$API/api/hosting/v1/websites" \
+            curl -s -X POST "$API/api/hosting/v1/websites" \
               -H "Authorization: Bearer $TOKEN" \
               -H "Content-Type: application/json" \
-              -d "{\"domain\": \"$FQDN\", \"order_id\": $ORDER_ID}")
-            echo "$RESULT" | jq .
-            # Wait for provisioning
-            echo "Waiting 15s for subdomain provisioning..."
-            sleep 15
+              -d "{\"domain\": \"$FQDN\", \"order_id\": $ORDER_ID}" | jq .
+            echo "Waiting 20s for subdomain provisioning..."
+            sleep 20
           else
-            echo "Website $FQDN already exists — skipping creation"
+            echo "Website $FQDN already exists - skipping creation"
           fi
 
-      # ── 4. Upsert DNS CNAME record ────────────────────────────────────────
+      # 4. Upsert DNS CNAME record
       - name: Set DNS CNAME for subdomain
         env:
           TOKEN: ${{ secrets.HOSTINGER_TOKEN }}
           SUB:   ${{ steps.vars.outputs.subdomain }}
         run: |
-          # CNAME → root domain (same Hostinger server handles routing)
-          curl -sf -X PUT \
+          HTTP=$(curl -s -o /tmp/dns.json -w "%{http_code}" -X PUT \
             "$API/api/dns/v1/zones/$ROOT_DOMAIN" \
             -H "Authorization: Bearer $TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{
-              \"overwrite\": false,
-              \"zone\": [{
-                \"name\": \"$SUB\",
-                \"ttl\": 300,
-                \"type\": \"CNAME\",
-                \"records\": [{ \"content\": \"$ROOT_DOMAIN.\" }]
-              }]
-            }"
-          echo "DNS CNAME $SUB.$ROOT_DOMAIN → $ROOT_DOMAIN set"
+            -d "{\"overwrite\": false, \"zone\": [{\"name\": \"$SUB\", \"ttl\": 300, \"type\": \"CNAME\", \"records\": [{\"content\": \"$ROOT_DOMAIN.\"}]}]}")
 
-      # ── 5. Rsync files to hosting ─────────────────────────────────────────
+          echo "DNS HTTP status: $HTTP"
+          cat /tmp/dns.json
+
+      # 5. Rsync files to hosting
       - name: Deploy files via rsync
         env:
           SSH_KEY:  ${{ secrets.DEPLOY_SSH_KEY }}
-          SERVER:   ${{ steps.hosting.outputs.server }}
+          SERVER:   ${{ secrets.HOSTINGER_SSH_HOST }}
           USERNAME: ${{ steps.hosting.outputs.username }}
           FQDN:     ${{ steps.vars.outputs.fqdn }}
           IDEA:     ${{ steps.vars.outputs.idea }}
@@ -136,20 +127,17 @@ jobs:
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -H "$SERVER" >> ~/.ssh/known_hosts 2>/dev/null
 
-          # Hostinger hPanel subdomain path
           REMOTE="$USERNAME@$SERVER:~/domains/$FQDN/public_html/"
+          echo "Syncing ideas/$IDEA/ to $REMOTE"
 
-          echo "Syncing ideas/$IDEA/ → $REMOTE"
           rsync -avz --delete \
             -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" \
             "./ideas/$IDEA/" \
             "$REMOTE"
 
-      # ── 6. Print summary ──────────────────────────────────────────────────
+      # 6. Summary
       - name: Deployment summary
         run: |
-          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-          echo "  Deployed: ${{ steps.vars.outputs.idea }}"
-          echo "  URL:      https://${{ steps.vars.outputs.fqdn }}"
-          echo "  DNS propagation: up to 5 min (TTL 300s)"
-          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "Deployed: ${{ steps.vars.outputs.idea }}"
+          echo "URL:      https://${{ steps.vars.outputs.fqdn }}"
+          echo "DNS propagation: up to 5 min (TTL 300s)"
