@@ -118,6 +118,7 @@ jobs:
         env:
           SSH_KEY:  ${{ secrets.DEPLOY_SSH_KEY }}
           SERVER:   ${{ secrets.HOSTINGER_SSH_HOST }}
+          PORT:     ${{ secrets.HOSTINGER_SSH_PORT }}
           USERNAME: ${{ steps.hosting.outputs.username }}
           FQDN:     ${{ steps.vars.outputs.fqdn }}
           IDEA:     ${{ steps.vars.outputs.idea }}
@@ -125,13 +126,13 @@ jobs:
           mkdir -p ~/.ssh
           echo "$SSH_KEY" | base64 -d > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -H "$SERVER" >> ~/.ssh/known_hosts 2>/dev/null
+          ssh-keyscan -p "$PORT" -H "$SERVER" >> ~/.ssh/known_hosts 2>/dev/null
 
           REMOTE="$USERNAME@$SERVER:~/domains/$FQDN/public_html/"
           echo "Syncing ideas/$IDEA/ to $REMOTE"
 
           rsync -avz --delete \
-            -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" \
+            -e "ssh -i ~/.ssh/deploy_key -p $PORT -o StrictHostKeyChecking=no" \
             "./ideas/$IDEA/" \
             "$REMOTE"
 
