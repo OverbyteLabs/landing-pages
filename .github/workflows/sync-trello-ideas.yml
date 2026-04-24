@@ -1,0 +1,104 @@
+﻿name: Sync Trello Ideas to GitHub Project
+
+on:
+  schedule:
+    # Every Monday at 08:00 UTC
+    - cron: '0 8 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    env:
+      TRELLO_API_KEY: ${{ secrets.TRELLO_API_KEY }}
+      TRELLO_TOKEN: ${{ secrets.TRELLO_TOKEN }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # AppSumo Portfolio Validations board ID
+      TRELLO_BOARD_ID: "6873934fa8fe9b84f6350ddc"
+      # OverbyteLabs/projects/2
+      GH_ORG: "OverbyteLabs"
+      GH_PROJECT_NUMBER: "2"
+
+    steps:
+      - name: Fetch Trello cards
+        id: trello
+        run: |
+          curl -s \
+            "https://api.trello.com/1/boards/${TRELLO_BOARD_ID}/cards?key=${TRELLO_API_KEY}&token=${TRELLO_TOKEN}&fields=name,desc,closed" \
+            -o trello_cards.json
+          echo "Trello cards fetched:"
+          jq '[.[] | select(.closed == false) | .name]' trello_cards.json
+
+      - name: Fetch current GitHub project items
+        id: github
+        run: |
+          gh api graphql -f query='
+            query($org: String!, $number: Int!) {
+              organization(login: $org) {
+                projectV2(number: $number) {
+                  id
+                  items(first: 100) {
+                    nodes {
+                      id
+                      content {
+                        ... on DraftIssue { title }
+                        ... on Issue { title }
+                        ... on PullRequest { title }
+                      }
+                    }
+                  }
+                }
+              }
+            }' \
+            -f org="${GH_ORG}" \
+            -F number="${GH_PROJECT_NUMBER}" \
+            > gh_project.json
+
+          echo "GitHub project items fetched:"
+          jq '[.data.organization.projectV2.items.nodes[] | .content.title]' gh_project.json
+
+      - name: Sync new ideas
+        run: |
+          PROJECT_ID=$(jq -r '.data.organization.projectV2.id' gh_project.json)
+
+          # Build list of existing titles (lowercase for case-insensitive compare)
+          EXISTING=$(jq -r '
+            [.data.organization.projectV2.items.nodes[]
+              | .content.title
+              | ascii_downcase]
+          ' gh_project.json)
+
+          echo "Project ID: $PROJECT_ID"
+          echo "Existing titles: $EXISTING"
+
+          # For each open Trello card, add if title not already present
+          jq -c '.[] | select(.closed == false) | {name, desc}' trello_cards.json | \
+          while IFS= read -r card; do
+            TITLE=$(echo "$card" | jq -r '.name')
+            DESC=$(echo "$card" | jq -r '.desc')
+            TITLE_LOWER=$(echo "$TITLE" | tr '[:upper:]' '[:lower:]')
+
+            FOUND=$(echo "$EXISTING" | jq --arg t "$TITLE_LOWER" 'map(select(. == $t)) | length')
+
+            if [ "$FOUND" -eq "0" ]; then
+              echo "Adding new idea: $TITLE"
+              gh api graphql -f query='
+                mutation($projectId: ID!, $title: String!, $body: String!) {
+                  addProjectV2DraftIssue(input: {
+                    projectId: $projectId
+                    title: $title
+                    body: $body
+                  }) {
+                    projectItem { id }
+                  }
+                }' \
+                -f projectId="$PROJECT_ID" \
+                -f title="$TITLE" \
+                -f body="$DESC"
+            else
+              echo "Already exists, skipping: $TITLE"
+            fi
+          done
