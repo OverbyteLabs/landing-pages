@@ -3,3 +3,9 @@ node_modules/
 *.zip
 *.tar.gz
 .env
+
+# Claude
+CLAUDE.md
+**/CLAUDE.md
+.claude/
+**/.claude/
