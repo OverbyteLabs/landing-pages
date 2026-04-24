@@ -39,13 +39,13 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     exit;
 }
 
-// Sanitize to prevent header injection
+// Prevent header injection
 $name    = preg_replace('/[\r\n]/', ' ', $name);
 $company = preg_replace('/[\r\n]/', ' ', $company);
 $email   = filter_var($email, FILTER_SANITIZE_EMAIL);
 
 $to      = 'info@overbytelabs.com';
-$subject = 'OverbyteLabs enquiry from ' . $name;
+$subject = 'Overbite enquiry from ' . $name;
 
 $body_text  = "Name:    {$name}\n";
 $body_text .= "Email:   {$email}\n";
