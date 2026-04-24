@@ -1,0 +1,525 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QuickClause — AI Contract Red-Flag Highlighter</title>
+  <meta name="description" content="Upload a PDF contract. QuickClause flags auto-renewals, liability caps, indemnity traps, and other red flags with colour-coded severity ratings. First 10 pages free.">
+
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23dc2626'/><path d='M10 8h12M10 13h8M10 18h10M10 23h6' stroke='white' stroke-width='2' stroke-linecap='round'/></svg>">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #fafaf9;
+      --white: #ffffff;
+      --ink: #1c1917;
+      --ink-2: #57534e;
+      --ink-3: #a8a29e;
+      --border: #e7e5e4;
+      --red: #dc2626;
+      --red-light: #fee2e2;
+      --red-border: #fecaca;
+      --amber: #d97706;
+      --amber-light: #fef3c7;
+      --amber-border: #fde68a;
+      --green: #16a34a;
+      --green-light: #dcfce7;
+      --green-border: #bbf7d0;
+      --blue: #2563eb;
+      --blue-light: #eff6ff;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+    body { font-family: 'Plus Jakarta Sans', -apple-system, sans-serif; background: var(--bg); color: var(--ink); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+    ::selection { background: #fee2e2; }
+    .container { max-width: 1160px; width: 100%; margin: 0 auto; padding: 0 2rem; }
+
+    /* Header */
+    .header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100; height: 72px;
+      background: rgba(250,250,249,0.93); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border); display: flex; align-items: center;
+    }
+    .header-inner { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+    .logo { display: flex; align-items: center; gap: 0.625rem; text-decoration: none; color: var(--ink); }
+    .logo-mark {
+      width: 32px; height: 32px; background: var(--red); border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .logo-mark svg { width: 18px; height: 18px; }
+    .logo-text { font-weight: 700; font-size: 1.1rem; }
+    .logo-sub { font-size: 0.72rem; color: var(--ink-3); display: block; margin-top: -2px; }
+    .nav { display: flex; align-items: center; gap: 2rem; }
+    .nav a { font-size: 0.875rem; color: var(--ink-2); text-decoration: none; transition: color 0.2s; font-weight: 500; }
+    .nav a:hover { color: var(--red); }
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.7rem 1.4rem; border-radius: 8px;
+      font-size: 0.875rem; font-weight: 600; text-decoration: none;
+      transition: all 0.2s; cursor: pointer; border: none; font-family: inherit;
+    }
+    .btn-red { background: var(--red); color: var(--white); }
+    .btn-red:hover { filter: brightness(1.1); transform: translateY(-1px); }
+    .btn-ghost { background: transparent; color: var(--ink-2); border: 1px solid var(--border); }
+    .btn-ghost:hover { background: var(--border); }
+    .mobile-menu-btn { display: none; background: none; border: none; cursor: pointer; color: var(--ink-2); }
+    .mobile-menu {
+      display: none; position: fixed; top: 72px; left: 0; right: 0; bottom: 0;
+      background: var(--white); padding: 2rem; z-index: 99; flex-direction: column; gap: 1.5rem;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a { font-size: 1.1rem; color: var(--ink); text-decoration: none; }
+
+    /* Hero */
+    .hero {
+      padding-top: calc(72px + 4.5rem); padding-bottom: 4.5rem;
+      background: linear-gradient(180deg, #fff5f5 0%, var(--bg) 100%);
+    }
+    .hero-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; }
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.3rem 0.75rem; border-radius: 100px;
+      background: var(--red-light); border: 1px solid var(--red-border);
+      font-size: 0.78rem; font-weight: 600; color: var(--red);
+      text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1.25rem;
+    }
+    .hero h1 {
+      font-size: clamp(2.25rem, 4vw, 3.25rem); font-weight: 700;
+      line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 1.25rem;
+    }
+    .hero h1 em { font-style: normal; color: var(--red); }
+    .hero-subtitle { font-size: 1.05rem; color: var(--ink-2); margin-bottom: 2rem; line-height: 1.75; }
+    .hero-cta { display: flex; gap: 0.875rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+    .hero-proof { display: flex; align-items: center; gap: 0.5rem; font-size: 0.825rem; color: var(--ink-3); }
+    .hero-proof svg { width: 16px; height: 16px; stroke: var(--green); }
+
+    /* Contract mockup */
+    .contract-card {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.07);
+      overflow: hidden;
+    }
+    .contract-head {
+      padding: 1rem 1.25rem; background: var(--bg); border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .doc-name { display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; font-weight: 600; }
+    .doc-name svg { width: 18px; height: 18px; stroke: var(--red); }
+    .severity-bar { display: flex; align-items: center; gap: 0.5rem; font-size: 0.78rem; }
+    .sev-pill {
+      padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 600; font-size: 0.72rem;
+    }
+    .sev-red { background: var(--red-light); color: var(--red); }
+    .sev-amber { background: var(--amber-light); color: var(--amber); }
+    .sev-green { background: var(--green-light); color: var(--green); }
+    .contract-body { padding: 1.25rem; font-size: 0.875rem; line-height: 1.85; color: var(--ink-2); }
+    .contract-body p { margin-bottom: 0.875rem; }
+    .contract-body p:last-child { margin-bottom: 0; }
+    .hl-red { background: var(--red-light); color: var(--red); border-bottom: 2px solid var(--red); padding: 0 2px; border-radius: 2px; cursor: default; }
+    .hl-amber { background: var(--amber-light); color: var(--amber); border-bottom: 2px solid var(--amber); padding: 0 2px; border-radius: 2px; cursor: default; }
+    .hl-green { background: var(--green-light); color: var(--green); border-bottom: 2px solid var(--green); padding: 0 2px; border-radius: 2px; cursor: default; }
+    .flag-panel { border-top: 1px solid var(--border); }
+    .flag-item {
+      display: flex; align-items: flex-start; gap: 0.875rem;
+      padding: 1rem 1.25rem; border-bottom: 1px solid var(--border);
+    }
+    .flag-item:last-child { border-bottom: none; }
+    .flag-sev { flex-shrink: 0; margin-top: 2px; }
+    .flag-text h4 { font-size: 0.825rem; font-weight: 600; margin-bottom: 0.2rem; }
+    .flag-text p { font-size: 0.8rem; color: var(--ink-3); }
+
+    /* Stats */
+    .stats { background: var(--ink); padding: 3rem 0; }
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; text-align: center; }
+    .stat-num { font-size: 2rem; font-weight: 700; color: var(--white); letter-spacing: -0.03em; }
+    .stat-label { font-size: 0.85rem; color: rgba(255,255,255,0.45); margin-top: 0.25rem; }
+
+    /* Flags */
+    .flag-types { padding: 5.5rem 0; background: var(--white); }
+    .section-header { text-align: center; max-width: 580px; margin: 0 auto 3.5rem; }
+    .section-header h2 { font-size: clamp(1.75rem, 3vw, 2.5rem); font-weight: 700; letter-spacing: -0.025em; margin-bottom: 0.875rem; }
+    .section-header p { color: var(--ink-2); font-size: 1.05rem; }
+    .flags-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .flag-card { border-radius: 12px; padding: 1.5rem; border-left: 4px solid; }
+    .flag-card.critical { background: var(--red-light); border-color: var(--red); }
+    .flag-card.warning { background: var(--amber-light); border-color: var(--amber); }
+    .flag-card.info { background: var(--green-light); border-color: var(--green); }
+    .flag-card-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.5rem; }
+    .flag-card.critical .flag-card-label { color: var(--red); }
+    .flag-card.warning .flag-card-label { color: var(--amber); }
+    .flag-card.info .flag-card-label { color: var(--green); }
+    .flag-card h3 { font-size: 0.975rem; font-weight: 600; margin-bottom: 0.4rem; }
+    .flag-card p { font-size: 0.85rem; color: var(--ink-2); line-height: 1.6; }
+
+    /* Features */
+    .features { padding: 5.5rem 0; background: var(--bg); }
+    .features-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem; }
+    .feature-card {
+      background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 1.75rem;
+      transition: border-color 0.25s; display: flex; gap: 1rem; align-items: flex-start;
+    }
+    .feature-card:hover { border-color: var(--red-border); }
+    .fi-icon {
+      width: 40px; height: 40px; background: var(--red-light); border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .fi-icon svg { width: 20px; height: 20px; stroke: var(--red); }
+    .feature-card h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.375rem; }
+    .feature-card p { font-size: 0.875rem; color: var(--ink-2); line-height: 1.65; }
+
+    /* Pricing */
+    .pricing { padding: 5.5rem 0; background: var(--white); }
+    .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; max-width: 860px; margin: 0 auto; }
+    .pricing-card {
+      border: 1px solid var(--border); border-radius: 16px; padding: 2rem; text-align: center;
+    }
+    .pricing-card.featured { border-color: var(--red); box-shadow: 0 0 0 3px var(--red-light); }
+    .plan-name { font-size: 0.875rem; font-weight: 600; color: var(--ink-2); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.04em; }
+    .plan-price { font-size: 2.25rem; font-weight: 700; margin-bottom: 0.25rem; letter-spacing: -0.03em; }
+    .plan-unit { font-size: 0.825rem; color: var(--ink-3); margin-bottom: 1.5rem; }
+    .plan-perks { list-style: none; text-align: left; margin-bottom: 1.75rem; }
+    .plan-perks li { display: flex; align-items: flex-start; gap: 0.625rem; font-size: 0.875rem; color: var(--ink-2); margin-bottom: 0.625rem; }
+    .plan-perks li::before { content: '✓'; color: var(--green); font-weight: 700; flex-shrink: 0; }
+
+    /* CTA */
+    .cta-section {
+      padding: 6rem 0; text-align: center;
+      background: linear-gradient(180deg, var(--bg) 0%, #fff5f5 100%);
+    }
+    .cta-section h2 { font-size: clamp(1.75rem, 3vw, 2.5rem); font-weight: 700; letter-spacing: -0.025em; margin-bottom: 1rem; }
+    .cta-section p { color: var(--ink-2); margin-bottom: 2.5rem; font-size: 1.05rem; }
+    .waitlist-form { display: flex; gap: 0.75rem; max-width: 420px; margin: 0 auto; }
+    .waitlist-form input {
+      flex: 1; padding: 0.85rem 1rem; border-radius: 8px;
+      border: 1px solid var(--border); background: var(--white);
+      font-family: inherit; font-size: 0.95rem; color: var(--ink);
+    }
+    .waitlist-form input:focus { outline: none; border-color: var(--red); box-shadow: 0 0 0 3px var(--red-light); }
+    .waitlist-form input::placeholder { color: var(--ink-3); }
+    .success-msg { display: none; font-weight: 600; color: var(--green); font-size: 1rem; }
+    .cta-note { font-size: 0.8rem; color: var(--ink-3); margin-top: 1rem; }
+
+    footer { padding: 2rem 0; text-align: center; border-top: 1px solid var(--border); }
+    footer p { font-size: 0.875rem; color: var(--ink-3); }
+    footer a { color: var(--red); text-decoration: none; }
+
+    .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.5s ease, transform 0.5s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 1024px) {
+      .hero-inner { grid-template-columns: 1fr; }
+      .flags-grid, .pricing-grid { grid-template-columns: repeat(2, 1fr); }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .nav, .header-cta { display: none; }
+      .mobile-menu-btn { display: block; }
+      .flags-grid, .features-grid, .pricing-grid { grid-template-columns: 1fr; }
+      .waitlist-form { flex-direction: column; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+      .reveal { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <div class="header-inner">
+        <a href="/" class="logo">
+          <div class="logo-mark">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="12" y2="17"/>
+            </svg>
+          </div>
+          <div>
+            <span class="logo-text">QuickClause</span>
+            <span class="logo-sub">by Overbyte</span>
+          </div>
+        </a>
+        <nav class="nav">
+          <a href="#flags">What we catch</a>
+          <a href="#features">Features</a>
+          <a href="#pricing">Pricing</a>
+        </nav>
+        <a href="#cta" class="btn btn-red header-cta">Review a contract</a>
+        <button class="mobile-menu-btn" aria-label="Menu">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#flags">What we catch</a>
+    <a href="#features">Features</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#cta">Review a contract</a>
+  </div>
+
+  <main>
+    <section class="hero">
+      <div class="container">
+        <div class="hero-inner">
+          <div>
+            <div class="eyebrow">AI contract review</div>
+            <h1>Spot the <em>red flags</em> before you sign.</h1>
+            <p class="hero-subtitle">Upload a PDF and QuickClause highlights auto-renewals, liability caps, indemnity traps, and governing law clauses — colour-coded by severity. First 10 pages free.</p>
+            <div class="hero-cta">
+              <a href="#cta" class="btn btn-red">
+                Review a contract free
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </a>
+              <a href="#flags" class="btn btn-ghost">What we flag</a>
+            </div>
+            <p class="hero-proof">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Not a law firm — not a replacement for one either. QuickClause helps you know what questions to ask.
+            </p>
+          </div>
+          <div class="contract-card reveal">
+            <div class="contract-head">
+              <div class="doc-name">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                SaaS_Agreement_v3.pdf · 24 pages
+              </div>
+              <div class="severity-bar">
+                <span class="sev-pill sev-red">3 critical</span>
+                <span class="sev-pill sev-amber">2 review</span>
+                <span class="sev-pill sev-green">1 ok</span>
+              </div>
+            </div>
+            <div class="contract-body">
+              <p>The subscription shall renew automatically for successive one-year terms unless either party provides written notice of non-renewal at least <span class="hl-red" title="Critical: 90-day auto-renewal window">ninety (90) days prior to the end</span> of the then-current term.</p>
+              <p>Provider's total aggregate liability shall not exceed the <span class="hl-amber" title="Review: Low liability cap — assess risk">fees paid in the prior 30-day period</span>. Customer shall indemnify and hold harmless Provider from any <span class="hl-red" title="Critical: Broad indemnity — requires legal review">third-party claim arising from Customer's use</span> of the Service.</p>
+              <p>This Agreement shall be governed by the laws of <span class="hl-green" title="OK: Favourable jurisdiction">England and Wales</span>, exclusive jurisdiction of the courts therein.</p>
+            </div>
+            <div class="flag-panel">
+              <div class="flag-item">
+                <span class="flag-sev"><span class="sev-pill sev-red">Critical</span></span>
+                <div class="flag-text">
+                  <h4>Auto-renewal: 90-day notice window</h4>
+                  <p>Industry standard is 30 days. 90 days is unusually long — easy to miss the cancellation window.</p>
+                </div>
+              </div>
+              <div class="flag-item">
+                <span class="flag-sev"><span class="sev-pill sev-red">Critical</span></span>
+                <div class="flag-text">
+                  <h4>Broad third-party indemnity</h4>
+                  <p>Indemnity for "any" third-party claim is uncommonly wide. Consider negotiating a cap or exclusions.</p>
+                </div>
+              </div>
+              <div class="flag-item">
+                <span class="flag-sev"><span class="sev-pill sev-amber">Review</span></span>
+                <div class="flag-text">
+                  <h4>Liability cap: 30-day fees only</h4>
+                  <p>Very low cap for a multi-year commitment. Standard is 12 months of fees paid.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="stats">
+      <div class="container">
+        <div class="stats-grid">
+          <div class="reveal"><div class="stat-num">12+</div><div class="stat-label">clause categories flagged</div></div>
+          <div class="reveal"><div class="stat-num">Free</div><div class="stat-label">first 10 pages — no card needed</div></div>
+          <div class="reveal"><div class="stat-num">CSV</div><div class="stat-label">risk report export for compliance</div></div>
+          <div class="reveal"><div class="stat-num">&lt;60s</div><div class="stat-label">review time for a standard NDA</div></div>
+        </div>
+      </div>
+    </div>
+
+    <section class="flag-types" id="flags">
+      <div class="container">
+        <div class="section-header reveal">
+          <h2>What QuickClause catches</h2>
+          <p>Trained on thousands of commercial contracts. Three severity levels — so you know what needs a lawyer, and what you can accept.</p>
+        </div>
+        <div class="flags-grid">
+          <div class="flag-card critical reveal">
+            <div class="flag-card-label">Critical</div>
+            <h3>Auto-renewal traps</h3>
+            <p>Long notice windows and evergreen clauses that lock you in for another year without warning.</p>
+          </div>
+          <div class="flag-card critical reveal">
+            <div class="flag-card-label">Critical</div>
+            <h3>Broad indemnity clauses</h3>
+            <p>Open-ended indemnity obligations that extend to third-party claims without caps or carve-outs.</p>
+          </div>
+          <div class="flag-card critical reveal">
+            <div class="flag-card-label">Critical</div>
+            <h3>IP ownership sweeps</h3>
+            <p>Clauses that assign IP created during the engagement to the other party, including pre-existing work.</p>
+          </div>
+          <div class="flag-card warning reveal">
+            <div class="flag-card-label">Review</div>
+            <h3>Low liability caps</h3>
+            <p>Caps below 3 months of fees are well below the commercial norm. Flag for renegotiation.</p>
+          </div>
+          <div class="flag-card warning reveal">
+            <div class="flag-card-label">Review</div>
+            <h3>Unilateral change rights</h3>
+            <p>Vendor can change terms, pricing, or features with minimal notice and no consent required.</p>
+          </div>
+          <div class="flag-card info reveal">
+            <div class="flag-card-label">Informational</div>
+            <h3>Governing law & jurisdiction</h3>
+            <p>Identifies which courts and law apply. Flags if jurisdiction is unusual for your business location.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="features" id="features">
+      <div class="container">
+        <div class="section-header reveal">
+          <h2>Built for non-lawyers</h2>
+        </div>
+        <div class="features-grid">
+          <div class="feature-card reveal">
+            <div class="fi-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+            <div>
+              <h3>PDF upload</h3>
+              <p>Any standard PDF contract. No special formatting needed. Handles scanned documents via OCR.</p>
+            </div>
+          </div>
+          <div class="feature-card reveal">
+            <div class="fi-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+            <div>
+              <h3>Colour-coded severity</h3>
+              <p>Red, amber, and green highlights directly on the contract text. See the problem in context, not just in a list.</p>
+            </div>
+          </div>
+          <div class="feature-card reveal">
+            <div class="fi-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div>
+            <div>
+              <h3>CSV risk report</h3>
+              <p>Download a structured summary of all flags with clause location, severity, and plain-English explanation.</p>
+            </div>
+          </div>
+          <div class="feature-card reveal">
+            <div class="fi-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg></div>
+            <div>
+              <h3>Plain English summaries</h3>
+              <p>Each flag includes a one-sentence explanation of the risk and why it matters — no legal background required.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="pricing" id="pricing">
+      <div class="container">
+        <div class="section-header reveal">
+          <h2>Transparent, per-page pricing</h2>
+          <p>Pay only for what you review. Credits never expire.</p>
+        </div>
+        <div class="pricing-grid">
+          <div class="pricing-card reveal">
+            <div class="plan-name">Starter</div>
+            <div class="plan-price">Free</div>
+            <div class="plan-unit">first 10 pages</div>
+            <ul class="plan-perks">
+              <li>All 12+ flag categories</li>
+              <li>Colour-coded highlights</li>
+              <li>Plain English summaries</li>
+            </ul>
+            <a href="#cta" class="btn btn-ghost" style="width:100%;justify-content:center;">Try for free</a>
+          </div>
+          <div class="pricing-card featured reveal">
+            <div class="plan-name">Pay-as-you-go</div>
+            <div class="plan-price">$0.09</div>
+            <div class="plan-unit">per page after free tier</div>
+            <ul class="plan-perks">
+              <li>Everything in Starter</li>
+              <li>CSV risk report export</li>
+              <li>OCR for scanned PDFs</li>
+              <li>Credits never expire</li>
+            </ul>
+            <a href="#cta" class="btn btn-red" style="width:100%;justify-content:center;">Get started</a>
+          </div>
+          <div class="pricing-card reveal">
+            <div class="plan-name">Teams</div>
+            <div class="plan-price">Custom</div>
+            <div class="plan-unit">volume &amp; API access</div>
+            <ul class="plan-perks">
+              <li>Bulk page credits</li>
+              <li>API integration</li>
+              <li>Custom flag categories</li>
+              <li>Priority support</li>
+            </ul>
+            <a href="#cta" class="btn btn-ghost" style="width:100%;justify-content:center;">Contact us</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-section" id="cta">
+      <div class="container">
+        <h2>Know what you're signing before you sign it.</h2>
+        <p>Join the waitlist and review your first 10 pages free when we launch.</p>
+        <form class="waitlist-form" id="waitlistForm" novalidate>
+          <input type="email" placeholder="your@email.com" required autocomplete="email">
+          <button type="submit" class="btn btn-red">Join waitlist</button>
+        </form>
+        <p class="success-msg" id="successMsg">You're on the list — we'll be in touch soon.</p>
+        <p class="cta-note">QuickClause is not a law firm and does not provide legal advice.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 QuickClause · Built by <a href="https://overbytelabs.com" target="_blank" rel="noopener">Overbyte</a></p>
+  </footer>
+
+  <script>
+    const menuBtn = document.querySelector('.mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    menuBtn.addEventListener('click', () => mobileMenu.classList.toggle('open'));
+    mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => mobileMenu.classList.remove('open')));
+    const obs = new IntersectionObserver(e => e.forEach(x => { if (x.isIntersecting) { x.target.classList.add('visible'); obs.unobserve(x.target); } }), { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+    document.getElementById('waitlistForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const email = this.querySelector('input').value.trim();
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return;
+      const btn = this.querySelector('button');
+      btn.disabled = true;
+      btn.textContent = 'Sending\u2026';
+      try {
+        const res = await fetch('default.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          this.style.display = 'none';
+          document.getElementById('successMsg').style.display = 'block';
+        } else {
+          btn.disabled = false;
+          btn.textContent = 'Try again';
+          alert(data.error || 'Something went wrong. Please try again.');
+        }
+      } catch (_) {
+        btn.disabled = false;
+        btn.textContent = 'Try again';
+        alert('Network error. Please try again.');
+      }
+    });
+  </script>
+</body>
+</html>

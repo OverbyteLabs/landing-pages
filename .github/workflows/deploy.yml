@@ -1,6 +1,15 @@
-﻿name: Deploy Landing Page
+name: Deploy Landing Page
 
 on:
+  push:
+    branches: [master]
+    paths:
+      - 'ideas/promptclean/**'
+      - 'ideas/instabriefs/**'
+      - 'ideas/podtime/**'
+      - 'ideas/quickclause/**'
+      - 'ideas/studystreak/**'
+      - 'ideas/therabook/**'
   workflow_dispatch:
     inputs:
       idea:
@@ -17,19 +26,58 @@ env:
   ROOT_DOMAIN: overbytelabs.com
 
 jobs:
-  deploy:
-    name: Deploy ${{ inputs.idea }}
+  # ── 1. Determine which ideas to deploy ───────────────────────────────────────
+  prepare:
+    name: Build deploy matrix
     runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Build deploy matrix
+        id: set-matrix
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            IDEA="${{ inputs.idea }}"
+            SUB="${{ inputs.subdomain || inputs.idea }}"
+            MATRIX=$(printf '[{"idea":"%s","subdomain":"%s"}]' "$IDEA" "$SUB")
+          else
+            # Detect which idea folders changed in this push
+            CHANGED=$(git diff --name-only HEAD~1 HEAD | grep '^ideas/' | cut -d/ -f2 | sort -u | tr '\n' ' ')
+            [ -z "$CHANGED" ] && CHANGED="promptclean instabriefs podtime quickclause studystreak therabook"
+            MATRIX="["
+            SEP=""
+            for idea in $CHANGED; do
+              MATRIX="${MATRIX}${SEP}{\"idea\":\"${idea}\",\"subdomain\":\"${idea}\"}"
+              SEP=","
+            done
+            MATRIX="${MATRIX}]"
+          fi
+          echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
+          echo "Deploying: $MATRIX"
+
+  # ── 2. Deploy each idea in the matrix ────────────────────────────────────────
+  deploy:
+    name: Deploy ${{ matrix.idea }}
+    needs: prepare
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJson(needs.prepare.outputs.matrix) }}
 
     steps:
       - uses: actions/checkout@v4
 
-      # 1. Resolve names
+      # Resolve FQDN
       - name: Resolve subdomain and paths
         id: vars
         run: |
-          IDEA="${{ inputs.idea }}"
-          SUB="${{ inputs.subdomain || inputs.idea }}"
+          IDEA="${{ matrix.idea }}"
+          SUB="${{ matrix.subdomain }}"
           FQDN="${SUB}.${ROOT_DOMAIN}"
 
           if [ ! -d "ideas/$IDEA" ]; then
@@ -41,7 +89,7 @@ jobs:
           echo "subdomain=$SUB" >> $GITHUB_OUTPUT
           echo "fqdn=$FQDN"     >> $GITHUB_OUTPUT
 
-      # 2. Create subdomain website entry (best-effort — skips if API is down)
+      # Create subdomain website entry (best-effort — skips if API is down)
       - name: Create subdomain on Hostinger (if new)
         continue-on-error: true
         env:
@@ -73,7 +121,7 @@ jobs:
             echo "Website $FQDN already exists or order_id unavailable - skipping"
           fi
 
-      # 3. Upsert DNS CNAME record (best-effort — skips if API is down)
+      # Upsert DNS CNAME record (best-effort — skips if API is down)
       - name: Set DNS CNAME for subdomain
         continue-on-error: true
         env:
@@ -88,7 +136,7 @@ jobs:
           echo "DNS HTTP status: $HTTP"
           cat /tmp/dns.json
 
-      # 4. Rsync files to hosting
+      # Rsync files to Hostinger
       - name: Deploy files via rsync
         env:
           SSH_KEY:  ${{ secrets.DEPLOY_SSH_KEY }}
@@ -107,11 +155,9 @@ jobs:
           echo "Server: $SERVER  Port: $PORT  User: $USERNAME"
           echo "FQDN: $FQDN  IDEA: $IDEA"
 
-          # Test SSH connection first
           ssh -i ~/.ssh/deploy_key -p "$PORT" \
             -o StrictHostKeyChecking=no \
             -o ConnectTimeout=10 \
-            -v \
             "$USERNAME@$SERVER" \
             "echo SSH_OK && mkdir -p ~/domains/$ROOT_DOMAIN/public_html/$SUB" 2>&1 || true
 
@@ -123,7 +169,6 @@ jobs:
             "./ideas/$IDEA/" \
             "$REMOTE"
 
-      # 6. Summary
       - name: Deployment summary
         run: |
           echo "Deployed: ${{ steps.vars.outputs.idea }}"
