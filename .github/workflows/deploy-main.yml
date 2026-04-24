@@ -1,0 +1,49 @@
+﻿name: Deploy Main Site
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'business_page/**'
+  workflow_dispatch:
+
+env:
+  ROOT_DOMAIN: overbytelabs.com
+
+jobs:
+  deploy:
+    name: Deploy overbytelabs.com main site
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy files via rsync
+        env:
+          SSH_KEY:  ${{ secrets.DEPLOY_SSH_KEY }}
+          SERVER:   ${{ secrets.HOSTINGER_SSH_HOST }}
+          PORT:     ${{ secrets.HOSTINGER_SSH_PORT }}
+          USERNAME: ${{ secrets.HOSTINGER_USERNAME }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_KEY" | base64 -d > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -p "$PORT" -H "$SERVER" >> ~/.ssh/known_hosts 2>/dev/null
+
+          echo "Deploying business_page/ to ~/domains/$ROOT_DOMAIN/public_html/"
+
+          ssh -i ~/.ssh/deploy_key -p "$PORT" \
+            -o StrictHostKeyChecking=no \
+            -o ConnectTimeout=10 \
+            "$USERNAME@$SERVER" \
+            "echo SSH_OK && mkdir -p ~/domains/$ROOT_DOMAIN/public_html" 2>&1 || true
+
+          rsync -avz --delete \
+            -e "ssh -i ~/.ssh/deploy_key -p $PORT -o StrictHostKeyChecking=no -o ConnectTimeout=10" \
+            "./business_page/" \
+            "$USERNAME@$SERVER:~/domains/$ROOT_DOMAIN/public_html/"
+
+      - name: Deployment summary
+        run: |
+          echo "Deployed: business_page/"
+          echo "URL:      https://$ROOT_DOMAIN"
