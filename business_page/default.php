@@ -1,68 +1,55 @@
 ﻿<?php
-declare(strict_types=1);
 header('Content-Type: application/json');
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405);
-    echo json_encode(['ok' => false, 'error' => 'Method not allowed']);
-    exit;
-}
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $data = json_decode(file_get_contents('php://input'), true);
 
-$body = file_get_contents('php://input');
-if ($body === false || $body === '') {
-    http_response_code(400);
-    echo json_encode(['ok' => false, 'error' => 'Empty request body']);
-    exit;
-}
+    $name = trim($data['name'] ?? '');
+    $email = trim($data['email'] ?? '');
+    $company = trim($data['company'] ?? '');
+    $message = trim($data['message'] ?? '');
 
-$data = json_decode($body, true);
-if (!is_array($data)) {
-    http_response_code(400);
-    echo json_encode(['ok' => false, 'error' => 'Invalid JSON']);
-    exit;
-}
+    $errors = [];
 
-$name    = isset($data['name'])    ? trim((string) $data['name'])    : '';
-$email   = isset($data['email'])   ? trim((string) $data['email'])   : '';
-$company = isset($data['company']) ? trim((string) $data['company']) : '';
-$message = isset($data['message']) ? trim((string) $data['message']) : '';
+    if (empty($name)) {
+        $errors[] = 'Name is required';
+    }
 
-if ($name === '' || $email === '' || $company === '' || $message === '') {
-    http_response_code(422);
-    echo json_encode(['ok' => false, 'error' => 'All fields are required']);
-    exit;
-}
+    if (empty($email)) {
+        $errors[] = 'Email is required';
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $errors[] = 'Invalid email format';
+    }
 
-if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    http_response_code(422);
-    echo json_encode(['ok' => false, 'error' => 'Invalid email address']);
-    exit;
-}
+    if (empty($message)) {
+        $errors[] = 'Message is required';
+    }
 
-// Prevent header injection
-$name    = preg_replace('/[\r\n]/', ' ', $name);
-$company = preg_replace('/[\r\n]/', ' ', $company);
-$email   = filter_var($email, FILTER_SANITIZE_EMAIL);
+    if (!empty($errors)) {
+        echo json_encode(['ok' => false, 'error' => implode(', ', $errors)]);
+        exit;
+    }
 
-$to      = 'info@overbytelabs.com';
-$subject = 'Overbite enquiry from ' . $name;
+    // Prevent header injection
+    $name    = preg_replace('/[\r\n]/', ' ', $name);
+    $company = preg_replace('/[\r\n]/', ' ', $company);
 
-$body_text  = "Name:    {$name}\n";
-$body_text .= "Email:   {$email}\n";
-$body_text .= "Company: {$company}\n\n";
-$body_text .= "Message:\n{$message}\n";
+    $to      = 'info@overbytelabs.com';
+    $subject = "New contact from $name" . ($company ? " at $company" : '');
+    $body    = "Name:    $name\nEmail:   $email\nCompany: $company\n\nMessage:\n$message";
 
-$headers  = "From: noreply@overbytelabs.com\r\n";
-$headers .= "Reply-To: {$email}\r\n";
-$headers .= "X-Mailer: PHP/" . phpversion() . "\r\n";
-$headers .= "MIME-Version: 1.0\r\n";
-$headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
+    $headers  = "From: noreply@overbytelabs.com\r\n";
+    $headers .= "Reply-To: $email\r\n";
+    $headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
+    $headers .= "X-Mailer: PHP/" . phpversion() . "\r\n";
 
-$sent = mail($to, $subject, $body_text, $headers);
+    $mailSent = mail($to, $subject, $body, $headers);
 
-if ($sent) {
-    echo json_encode(['ok' => true]);
+    if ($mailSent) {
+        echo json_encode(['ok' => true]);
+    } else {
+        echo json_encode(['ok' => false, 'error' => 'Failed to send email']);
+    }
 } else {
-    http_response_code(500);
-    echo json_encode(['ok' => false, 'error' => 'Failed to send message. Please try again later.']);
+    echo json_encode(['ok' => false, 'error' => 'Method not allowed']);
 }
