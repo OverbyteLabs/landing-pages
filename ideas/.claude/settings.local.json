@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python *)",
+      "Bash(pwsh *)",
+      "PowerShell(py *)",
+      "PowerShell($env:GEMINI_API_KEY='AIzaSyBWx3KxgqzwfX8W3m-duk6XyBvzNriCNe8'; C:\\\\Users\\\\cain\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python312\\\\python.exe gen_favicon.py)",
+      "PowerShell(C:\\\\Users\\\\cain\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python312\\\\python.exe -m pip install google-genai)"
+    ]
+  },
+  "enabledPlugins": {
+    "compound-engineering@compound-engineering-plugin": true
+  }
+}
