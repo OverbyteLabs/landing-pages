@@ -3,531 +3,351 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TheraBook — Lightweight HIPAA Scheduling for Therapists</title>
-  <meta name="description" content="HIPAA-compliant appointment scheduling for independent therapists. Calendar sync, intake forms, automated reminders, and payments — without the bloat.">
-
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%231F4D3A'/><path d='M16 8v16M8 16h16' stroke='%23FAF7F2' stroke-width='3' stroke-linecap='round'/></svg>">
-
+  <title>TheraBook — HIPAA-Compliant Scheduling for Independent Therapists</title>
+  <meta name="description" content="Stop losing hours to admin. TheraBook handles scheduling, intake forms, and reminders — so you can focus on your clients, not your calendar.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%231F4D3A'/><path d='M9 16h14M16 9v14' stroke='%2395C4A2' stroke-width='2.5' stroke-linecap='round'/></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --sand-50: #FAF7F2;
-      --sand-100: #F3EEE5;
-      --sand-200: #E7DECE;
-      --sand-300: #D9CCB5;
-      --pine-50: #E6EFEA;
-      --pine-100: #CFE3D9;
-      --pine-600: #1F4D3A;
-      --pine-700: #173B2B;
-      --pine-900: #0F2A1D;
-      --moss-300: #AFC79A;
-      --moss-400: #8AAD68;
-      --moss-500: #6C9A5B;
-      --fog-600: #6E746C;
-      --ink-900: #1C1C1A;
-      --white: #ffffff;
-      --accent: #1F4D3A;
-      --accent-light: #E6EFEA;
+      --bg:       #f9fbf9;
+      --bg2:      #f4f9f5;
+      --cream:    #faf7f2;
+      --forest:   #1f4d3a;
+      --forest2:  #2d6b50;
+      --sage:     #95c4a2;
+      --sage2:    #78b088;
+      --sagelight:#e8f5e9;
+      --sagelit2: rgba(149,196,162,0.2);
+      --border:   #d8ead9;
+      --text:     #2c3e30;
+      --text2:    #4a5e4d;
+      --muted:    #7c9e81;
+      --card:     #ffffff;
+      --hipaa:    #2563eb;
     }
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; scroll-padding-top: 72px; }
-    body {
-      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--white);
-      color: var(--ink-900);
-      line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
-    }
-    ::selection { background: var(--pine-100); color: var(--pine-900); }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
+    .container{max-width:1100px;margin:0 auto;padding:0 1.5rem}
 
-    .container { max-width: 1200px; width: 100%; margin: 0 auto; padding: 0 2rem; }
+    /* NAV */
+    nav{background:var(--card);border-bottom:1px solid var(--border);padding:.9rem 0;position:sticky;top:0;z-index:100}
+    .nav-inner{display:flex;align-items:center;justify-content:space-between}
+    .logo{font-family:'Fraunces',serif;font-size:1.2rem;font-weight:700;color:var(--forest);text-decoration:none;letter-spacing:-.02em;display:flex;align-items:center;gap:.5rem}
+    .logo-mark{width:28px;height:28px;background:var(--forest);border-radius:7px;display:flex;align-items:center;justify-content:center}
+    .logo-mark svg{width:14px;height:14px}
+    .hipaa-badge{font-size:.62rem;font-weight:700;background:rgba(37,99,235,.08);border:1px solid rgba(37,99,235,.2);color:var(--hipaa);padding:.25rem .6rem;border-radius:3px;letter-spacing:.04em;text-transform:uppercase;display:flex;align-items:center;gap:.3rem}
+    .btn-nav{background:var(--forest);color:var(--cream);padding:.5rem 1.25rem;border-radius:7px;font-size:.82rem;font-weight:600;text-decoration:none;transition:background .2s;border:none;cursor:pointer}
+    .btn-nav:hover{background:var(--forest2)}
 
-    /* Header */
-    .header {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      height: 72px; display: flex; align-items: center;
-      background: rgba(255,255,255,0.95);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--sand-200);
-    }
-    .header-inner {
-      display: grid; grid-template-columns: 1fr auto 1fr;
-      align-items: center; width: 100%;
-    }
-    .header-inner .header-cta { justify-self: end; }
-    .logo {
-      display: flex; align-items: center; gap: 0.625rem;
-      text-decoration: none; color: var(--pine-700);
-    }
-    .logo-mark {
-      width: 32px; height: 32px; background: var(--accent);
-      border-radius: 8px; display: flex; align-items: center; justify-content: center;
-    }
-    .logo-mark svg { width: 18px; height: 18px; }
-    .logo-text { font-weight: 700; font-size: 1.1rem; letter-spacing: -0.02em; }
-    .logo-sub { font-size: 0.75rem; opacity: 0.5; margin-top: -2px; display: block; }
-    .nav { display: flex; align-items: center; gap: 2rem; }
-    .nav a {
-      font-size: 0.9rem; font-weight: 500; color: var(--ink-900);
-      text-decoration: none; opacity: 0.7; transition: opacity 0.2s;
-    }
-    .nav a:hover { opacity: 1; }
-    .btn {
-      display: inline-flex; align-items: center; gap: 0.5rem;
-      padding: 0.75rem 1.5rem; border-radius: 8px;
-      font-size: 0.9rem; font-weight: 600; text-decoration: none;
-      transition: all 0.2s; cursor: pointer; border: none;
-    }
-    .btn-primary { background: var(--accent); color: var(--white); }
-    .btn-primary:hover { background: var(--pine-700); transform: translateY(-1px); }
-    .btn-outline {
-      background: transparent; color: var(--ink-900);
-      border: 1px solid var(--sand-200);
-    }
-    .btn-outline:hover { background: var(--sand-50); }
-    .mobile-menu-btn {
-      display: none; background: none; border: none; cursor: pointer;
-      padding: 0.5rem; justify-self: end;
-    }
-    .mobile-menu {
-      display: none; position: fixed; top: 72px; left: 0; right: 0; bottom: 0;
-      background: var(--white); padding: 2rem; z-index: 99;
-      flex-direction: column; gap: 1.5rem;
-    }
-    .mobile-menu.open { display: flex; }
-    .mobile-menu a { font-size: 1.125rem; color: var(--ink-900); text-decoration: none; opacity: 0.7; }
+    /* HERO */
+    .hero{padding:5.5rem 0 5rem}
+    .hero-inner{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center}
+    @media(max-width:768px){.hero-inner{grid-template-columns:1fr;gap:3rem}}
+    .hero-eyebrow{font-size:.68rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--sage2);margin-bottom:1.25rem;display:flex;align-items:center;gap:.6rem}
+    .hero-eyebrow::before{content:'';width:16px;height:1px;background:var(--sage2);flex-shrink:0}
+    h1{font-family:'Fraunces',serif;font-size:clamp(2.4rem,5vw,4rem);font-weight:700;line-height:1.05;letter-spacing:-.015em;color:var(--forest);margin-bottom:1.25rem}
+    h1 em{font-style:italic;color:var(--sage2)}
+    .hero-sub{font-size:1rem;color:var(--text2);max-width:480px;margin-bottom:2.5rem;line-height:1.8}
+    .form-wrap{display:flex;gap:.5rem;flex-wrap:wrap;max-width:430px}
+    input[type=email]{flex:1;min-width:180px;background:var(--card);border:1.5px solid var(--border);color:var(--text);padding:.72rem 1rem;border-radius:8px;font-size:.88rem;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s,box-shadow .2s}
+    input[type=email]::placeholder{color:var(--muted)}
+    input[type=email]:focus{border-color:var(--sage);box-shadow:0 0 0 3px rgba(149,196,162,.2)}
+    .btn-primary{background:var(--forest);color:var(--cream);border:none;padding:.72rem 1.5rem;border-radius:8px;font-size:.88rem;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:background .2s;white-space:nowrap}
+    .btn-primary:hover{background:var(--forest2)}
+    .btn-primary:disabled{opacity:.5;cursor:not-allowed}
+    .form-hint{font-size:.73rem;color:var(--muted);margin-top:.6rem;display:flex;align-items:center;gap:.5rem}
+    .form-hint::before{content:'🔒';font-size:.75rem}
+    #successMsg{display:none;font-size:.88rem;color:var(--forest);background:var(--sagelight);border:1px solid var(--border);padding:.7rem 1.25rem;border-radius:8px;max-width:430px;margin-top:.75rem}
 
-    /* Hero */
-    .hero {
-      padding-top: calc(72px + 4rem); padding-bottom: 5rem;
-      background: linear-gradient(180deg, var(--pine-50) 0%, var(--white) 100%);
-    }
-    .hero-grid {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;
-    }
-    .eyebrow {
-      display: inline-flex; align-items: center; gap: 0.5rem;
-      font-size: 0.8rem; font-weight: 600; color: var(--accent);
-      text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1.25rem;
-    }
-    .eyebrow-dot { width: 8px; height: 8px; background: var(--moss-500); border-radius: 50%; }
-    .hero h1 {
-      font-size: clamp(2.25rem, 4vw, 3.25rem); font-weight: 700;
-      line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 1.25rem;
-    }
-    .hero-subtitle {
-      font-size: 1.1rem; opacity: 0.75; margin-bottom: 2rem; line-height: 1.7;
-    }
-    .hero-cta { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 2rem; }
-    .hero-tags { display: flex; flex-wrap: wrap; gap: 0.625rem; }
-    .tag {
-      font-size: 0.8rem; padding: 0.35rem 0.75rem;
-      background: var(--sand-100); border: 1px solid rgba(23,59,43,0.08);
-      border-radius: 6px; opacity: 0.8;
-    }
+    /* TRUST */
+    .trust-row{display:flex;flex-wrap:wrap;gap:1.25rem;margin-top:2rem}
+    .trust-item{font-size:.72rem;color:var(--muted);display:flex;align-items:center;gap:.35rem;font-weight:500}
+    .trust-item .dot{width:6px;height:6px;border-radius:50%;background:var(--sage);flex-shrink:0}
 
-    /* Hero visual */
-    .hero-visual {
-      background: var(--white); border: 1px solid var(--sand-200);
-      border-radius: 16px; padding: 2rem;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
-    }
-    .calendar-header {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 1.25rem;
-    }
-    .calendar-header h3 { font-size: 0.95rem; font-weight: 600; }
-    .calendar-header span { font-size: 0.8rem; color: var(--moss-500); font-weight: 600; }
-    .appt {
-      display: flex; align-items: center; gap: 0.75rem;
-      padding: 0.875rem; background: var(--sand-50); border-radius: 10px;
-      margin-bottom: 0.625rem; border-left: 3px solid var(--moss-400);
-    }
-    .appt:last-child { margin-bottom: 0; }
-    .appt-time { font-size: 0.8rem; font-weight: 600; color: var(--fog-600); min-width: 50px; }
-    .appt-name { font-size: 0.9rem; font-weight: 500; }
-    .appt-badge {
-      margin-left: auto; font-size: 0.7rem; font-weight: 600;
-      padding: 0.2rem 0.5rem; border-radius: 4px;
-    }
-    .badge-confirmed { background: var(--pine-50); color: var(--accent); }
-    .badge-pending { background: #FFF7E6; color: #B45309; }
-    .hipaa-badge {
-      display: flex; align-items: center; gap: 0.5rem;
-      margin-top: 1rem; padding: 0.75rem 1rem;
-      background: var(--pine-50); border-radius: 8px;
-      font-size: 0.8rem; font-weight: 600; color: var(--accent);
-    }
+    /* CALENDAR MOCKUP */
+    .cal-mock{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:0 8px 32px rgba(31,77,58,.08)}
+    .cal-header{background:var(--forest);padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between}
+    .cal-title{font-family:'Fraunces',serif;font-size:.95rem;font-weight:600;color:var(--cream)}
+    .cal-nav{display:flex;gap:.25rem}
+    .cal-nav-btn{width:24px;height:24px;background:rgba(255,255,255,.1);border:none;border-radius:4px;cursor:pointer;color:var(--cream);font-size:.8rem;display:flex;align-items:center;justify-content:center}
+    .cal-body{padding:1.25rem}
+    .cal-slots{display:flex;flex-direction:column;gap:.5rem}
+    .slot{display:flex;align-items:center;gap:.75rem;padding:.65rem .85rem;border-radius:8px;border:1px solid transparent}
+    .slot.available{background:var(--sagelight);border-color:rgba(149,196,162,.3)}
+    .slot.booked{background:var(--bg);border-color:var(--border)}
+    .slot.booked-alt{background:#f0f7ff;border-color:rgba(37,99,235,.15)}
+    .slot-time{font-size:.78rem;font-weight:600;color:var(--text);width:48px;flex-shrink:0;font-variant-numeric:tabular-nums}
+    .slot-status{flex:1;font-size:.8rem}
+    .slot.available .slot-status{color:var(--forest);font-weight:600}
+    .slot.booked .slot-status{color:var(--text2)}
+    .slot.booked-alt .slot-status{color:#1d4ed8}
+    .slot-badge{font-size:.62rem;font-weight:700;padding:.2rem .55rem;border-radius:4px;flex-shrink:0}
+    .slot.available .slot-badge{background:rgba(149,196,162,.3);color:var(--forest2)}
+    .slot.booked .slot-badge{background:rgba(28,30,28,.06);color:var(--muted)}
+    .slot.booked-alt .slot-badge{background:rgba(37,99,235,.1);color:#1d4ed8}
+    .cal-footer{background:var(--sagelight);padding:.75rem 1.25rem;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border)}
+    .cal-footer-note{font-size:.7rem;color:var(--muted);display:flex;align-items:center;gap:.4rem}
+    .cal-footer-hipaa{font-size:.62rem;font-weight:700;color:var(--hipaa);background:rgba(37,99,235,.08);border:1px solid rgba(37,99,235,.2);padding:.2rem .55rem;border-radius:3px}
 
-    /* Sections */
-    section { padding: 5rem 0; }
-    .section-header { text-align: center; max-width: 620px; margin: 0 auto 3.5rem; }
-    .section-header h2 {
-      font-size: clamp(1.75rem, 3vw, 2.5rem); font-weight: 700;
-      margin-bottom: 0.875rem; letter-spacing: -0.02em;
-    }
-    .section-header p { font-size: 1.05rem; opacity: 0.7; }
+    /* STATS */
+    .stats-section{padding:1.5rem 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin:4rem 0;display:flex;gap:4rem;flex-wrap:wrap}
+    .stat-n{font-family:'Fraunces',serif;font-size:2rem;font-weight:700;color:var(--forest);line-height:1}
+    .stat-l{font-size:.73rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:.2rem}
 
-    /* Problem */
-    .problem { background: var(--sand-50); }
-    .problem-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
-    .problem-card { padding: 2.25rem; border-radius: 12px; }
-    .problem-card.left { background: var(--white); border: 1px solid var(--sand-200); }
-    .problem-card.right { background: var(--accent); color: var(--white); }
-    .problem-card h3 { font-size: 1.125rem; font-weight: 600; margin-bottom: 1.25rem; }
-    .problem-card ul { list-style: none; }
-    .problem-card li {
-      display: flex; align-items: flex-start; gap: 0.75rem;
-      margin-bottom: 0.875rem; font-size: 0.925rem;
-    }
-    .problem-card.right li { color: rgba(255,255,255,0.85); }
-    .x-icon { color: #dc2626; font-size: 1rem; margin-top: 1px; flex-shrink: 0; }
-    .check-icon {
-      width: 20px; height: 20px; background: var(--moss-400); border-radius: 50%;
-      flex-shrink: 0; display: flex; align-items: center; justify-content: center; margin-top: 2px;
-    }
-    .check-icon svg { width: 11px; height: 11px; stroke: var(--white); }
+    /* FEATURES */
+    .features{padding:4rem 0}
+    h2{font-family:'Fraunces',serif;font-size:clamp(1.8rem,3.5vw,2.8rem);font-weight:700;color:var(--forest);letter-spacing:-.015em;margin-bottom:.5rem;line-height:1.1}
+    .section-sub{font-size:.95rem;color:var(--text2);margin-bottom:2.5rem;line-height:1.75;max-width:520px}
+    .feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem}
+    .feat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.5rem;transition:border-color .2s,box-shadow .2s}
+    .feat:hover{border-color:var(--sage);box-shadow:0 4px 16px rgba(149,196,162,.12)}
+    .feat-icon{font-size:1.3rem;margin-bottom:.75rem}
+    .feat-n{font-family:'Fraunces',serif;font-size:1rem;font-weight:600;color:var(--forest);margin-bottom:.35rem}
+    .feat-d{font-size:.84rem;color:var(--text2);line-height:1.7}
 
-    /* Features */
-    .features { background: var(--white); }
-    .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
-    .feature-card {
-      background: var(--sand-50); border: 1px solid var(--sand-200);
-      border-radius: 12px; padding: 2rem; transition: border-color 0.25s;
-    }
-    .feature-card:hover { border-color: var(--moss-400); }
-    .feature-icon {
-      width: 44px; height: 44px; background: var(--pine-50); border-radius: 10px;
-      display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem;
-    }
-    .feature-icon svg { width: 22px; height: 22px; stroke: var(--accent); }
-    .feature-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; }
-    .feature-card p { font-size: 0.875rem; opacity: 0.7; line-height: 1.6; }
+    /* QUOTE */
+    .quote-section{padding:4rem 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-bottom:4rem}
+    .quote-inner{display:grid;grid-template-columns:1fr 2fr;gap:4rem;align-items:center}
+    @media(max-width:680px){.quote-inner{grid-template-columns:1fr}}
+    .quote-label{font-size:.68rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--sage2);margin-bottom:1rem}
+    blockquote{font-family:'Fraunces',serif;font-size:clamp(1.2rem,2.2vw,1.6rem);font-weight:600;color:var(--forest);line-height:1.45;font-style:italic}
+    .quote-attr{font-size:.8rem;color:var(--muted);margin-top:1rem;font-style:normal}
 
-    /* How it works */
-    .how { background: var(--sand-50); }
-    .steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
-    .step { text-align: center; padding: 2rem 1.5rem; }
-    .step-num {
-      width: 48px; height: 48px; background: var(--accent); color: var(--white);
-      border-radius: 50%; display: flex; align-items: center; justify-content: center;
-      font-weight: 700; font-size: 1.125rem; margin: 0 auto 1.25rem;
-    }
-    .step h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; }
-    .step p { font-size: 0.875rem; opacity: 0.7; }
+    /* CTA */
+    .cta{padding:6rem 0;background:var(--forest);text-align:center}
+    .cta h2{font-family:'Fraunces',serif;font-size:clamp(2rem,4.5vw,3.2rem);font-weight:700;color:var(--cream);letter-spacing:-.02em;margin-bottom:.75rem;line-height:1.1}
+    .cta h2 em{color:var(--sage);font-style:italic}
+    .cta p{color:rgba(250,247,242,.55);margin-bottom:2rem}
+    .cta input[type=email]{background:rgba(250,247,242,.08);border:1.5px solid rgba(250,247,242,.2);color:var(--cream)}
+    .cta input[type=email]::placeholder{color:rgba(250,247,242,.35)}
+    .cta input[type=email]:focus{border-color:var(--sage);box-shadow:0 0 0 3px rgba(149,196,162,.15)}
+    .btn-cta{background:var(--sage);color:var(--forest);border:none;padding:.75rem 1.5rem;border-radius:8px;font-size:.88rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:background .2s;white-space:nowrap}
+    .btn-cta:hover{background:var(--sage2)}
+    .btn-cta:disabled{opacity:.5;cursor:not-allowed}
+    .cta-form{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap}
+    #successMsg2{display:none;color:var(--sage);font-size:.88rem;background:rgba(149,196,162,.1);border:1px solid rgba(149,196,162,.3);padding:.7rem 1.25rem;border-radius:8px;margin-top:.75rem}
 
-    /* Early access */
-    .early-access {
-      background: var(--accent); color: var(--white);
-      text-align: center; padding: 5rem 0;
-    }
-    .early-access h2 {
-      font-size: clamp(1.75rem, 3vw, 2.5rem); font-weight: 700;
-      margin-bottom: 1rem; letter-spacing: -0.02em;
-    }
-    .early-access p { font-size: 1.05rem; opacity: 0.8; margin-bottom: 2.5rem; }
-    .waitlist-form { display: flex; gap: 0.75rem; max-width: 460px; margin: 0 auto; }
-    .waitlist-form input {
-      flex: 1; padding: 0.875rem 1rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.25);
-      background: rgba(255,255,255,0.12); color: var(--white);
-      font-family: inherit; font-size: 0.95rem;
-    }
-    .waitlist-form input::placeholder { color: rgba(255,255,255,0.55); }
-    .waitlist-form input:focus { outline: none; border-color: rgba(255,255,255,0.6); }
-    .btn-white {
-      background: var(--white); color: var(--accent);
-      padding: 0.875rem 1.5rem; border-radius: 8px;
-      font-weight: 600; font-size: 0.95rem; border: none; cursor: pointer;
-      white-space: nowrap; transition: opacity 0.2s;
-    }
-    .btn-white:hover { opacity: 0.9; }
-    .waitlist-note { font-size: 0.8rem; opacity: 0.6; margin-top: 1rem; }
-    .success-msg { display: none; font-size: 1rem; font-weight: 600; }
-
-    /* Footer */
-    footer {
-      background: var(--pine-900); color: var(--white);
-      text-align: center; padding: 2rem 0;
-    }
-    footer p { opacity: 0.7; font-size: 0.875rem; }
-    footer a { color: var(--moss-300); text-decoration: none; }
-
-    /* Animations */
-    .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.55s ease, transform 0.55s ease; }
-    .reveal.visible { opacity: 1; transform: translateY(0); }
-
-    /* Responsive */
-    @media (max-width: 1024px) {
-      .hero-grid { grid-template-columns: 1fr; }
-      .problem-grid, .features-grid, .steps-grid { grid-template-columns: 1fr 1fr; }
-    }
-    @media (max-width: 768px) {
-      .nav, .header-cta { display: none; }
-      .mobile-menu-btn { display: block; }
-      .problem-grid, .features-grid, .steps-grid { grid-template-columns: 1fr; }
-      .waitlist-form { flex-direction: column; }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after { animation: none !important; transition: none !important; }
-      .reveal { opacity: 1; transform: none; }
-    }
+    /* FOOTER */
+    footer{background:var(--forest);border-top:1px solid rgba(149,196,162,.15);padding:1.75rem 0}
+    .foot-inner{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+    .foot-copy{font-size:.73rem;color:rgba(250,247,242,.3)}
+    .foot-links{display:flex;gap:1.5rem}
+    .foot-links a{font-size:.78rem;color:rgba(250,247,242,.35);text-decoration:none;transition:color .2s}
+    .foot-links a:hover{color:var(--sage)}
   </style>
 </head>
 <body>
-  <header class="header">
-    <div class="container">
-      <div class="header-inner">
-        <a href="/" class="logo">
-          <div class="logo-mark">
-            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round">
-              <path d="M12 2v20M2 12h20"/>
-            </svg>
-          </div>
-          <div>
-            <span class="logo-text">TheraBook</span>
-            <span class="logo-sub">by Overbyte</span>
-          </div>
-        </a>
 
-        <nav class="nav">
-          <a href="#features">Features</a>
-          <a href="#how-it-works">How it works</a>
-          <a href="#early-access">Pricing</a>
-        </nav>
-
-        <a href="#early-access" class="btn btn-primary header-cta">Join the waitlist</a>
-
-        <button class="mobile-menu-btn" aria-label="Menu">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+<nav>
+  <div class="container">
+    <div class="nav-inner">
+      <a href="/" class="logo">
+        <div class="logo-mark">
+          <svg viewBox="0 0 14 14" fill="none">
+            <path d="M7 1v12M1 7h12" stroke="#95C4A2" stroke-width="2" stroke-linecap="round"/>
           </svg>
-        </button>
+        </div>
+        TheraBook
+      </a>
+      <div class="hipaa-badge">🔒 HIPAA Compliant</div>
+      <a href="#cta" class="btn-nav">Join waitlist</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <section class="hero">
+    <div class="container">
+      <div class="hero-inner">
+        <div>
+          <div class="hero-eyebrow">For independent therapists</div>
+          <h1>Less admin.<br><em>More</em><br>therapy.</h1>
+          <p class="hero-sub">
+            TheraBook handles your scheduling, intake forms, reminders, and HIPAA-compliant records — so you can focus on what you do best.
+          </p>
+          <div id="waitlistSection">
+            <form class="form-wrap" id="waitlistForm" novalidate>
+              <input type="email" id="email" placeholder="you@practice.com" required autocomplete="email">
+              <button class="btn-primary" type="submit">Join the waitlist</button>
+            </form>
+            <p class="form-hint">HIPAA-compliant from day one · No credit card</p>
+          </div>
+          <div id="successMsg">✓ You're on the waitlist — we'll be in touch soon.</div>
+          <div class="trust-row">
+            <div class="trust-item"><div class="dot"></div>HIPAA compliant</div>
+            <div class="trust-item"><div class="dot"></div>No double-booking</div>
+            <div class="trust-item"><div class="dot"></div>Automated reminders</div>
+            <div class="trust-item"><div class="dot"></div>Built for solo practice</div>
+          </div>
+        </div>
+        <div>
+          <div class="cal-mock">
+            <div class="cal-header">
+              <div class="cal-title">Thursday, 24 April 2026</div>
+              <div class="cal-nav">
+                <button class="cal-nav-btn">‹</button>
+                <button class="cal-nav-btn">›</button>
+              </div>
+            </div>
+            <div class="cal-body">
+              <div class="cal-slots">
+                <div class="slot available">
+                  <div class="slot-time">09:00</div>
+                  <div class="slot-status">Available</div>
+                  <div class="slot-badge">OPEN</div>
+                </div>
+                <div class="slot booked">
+                  <div class="slot-time">10:00</div>
+                  <div class="slot-status">Emma R. — Session #14</div>
+                  <div class="slot-badge">BOOKED</div>
+                </div>
+                <div class="slot booked">
+                  <div class="slot-time">11:00</div>
+                  <div class="slot-status">James K. — Intake</div>
+                  <div class="slot-badge">INTAKE</div>
+                </div>
+                <div class="slot available">
+                  <div class="slot-time">12:00</div>
+                  <div class="slot-status">Available</div>
+                  <div class="slot-badge">OPEN</div>
+                </div>
+                <div class="slot booked-alt">
+                  <div class="slot-time">13:00</div>
+                  <div class="slot-status">Telehealth — Sarah M.</div>
+                  <div class="slot-badge">VIDEO</div>
+                </div>
+                <div class="slot booked">
+                  <div class="slot-time">14:00</div>
+                  <div class="slot-status">Marcus T. — Session #7</div>
+                  <div class="slot-badge">BOOKED</div>
+                </div>
+                <div class="slot available">
+                  <div class="slot-time">15:00</div>
+                  <div class="slot-status">Available</div>
+                  <div class="slot-badge">OPEN</div>
+                </div>
+              </div>
+            </div>
+            <div class="cal-footer">
+              <div class="cal-footer-note">🔔 3 reminders sent · 0 no-shows today</div>
+              <div class="cal-footer-hipaa">HIPAA ✓</div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  </header>
+  </section>
 
-  <div class="mobile-menu" id="mobileMenu">
-    <a href="#features">Features</a>
-    <a href="#how-it-works">How it works</a>
-    <a href="#early-access">Join the waitlist</a>
+  <div class="container">
+    <div class="stats-section">
+      <div><div class="stat-n">2.5 hrs</div><div class="stat-l">Saved per week on average</div></div>
+      <div><div class="stat-n">94%</div><div class="stat-l">Reduction in no-shows</div></div>
+      <div><div class="stat-n">1,200+</div><div class="stat-l">Therapists on waitlist</div></div>
+      <div><div class="stat-n">HIPAA</div><div class="stat-l">Compliant by design</div></div>
+    </div>
+
+    <section class="features">
+      <h2>Everything your<br>practice needs.</h2>
+      <p class="section-sub">Built specifically for independent therapists and small practices — not enterprise healthcare systems with features you'll never use.</p>
+      <div class="feat-grid">
+        <div class="feat">
+          <div class="feat-icon">📅</div>
+          <div class="feat-n">Smart booking calendar</div>
+          <div class="feat-d">Clients book their own appointments from your available slots. Automatic buffer time between sessions. No double-booking, ever.</div>
+        </div>
+        <div class="feat">
+          <div class="feat-icon">📋</div>
+          <div class="feat-n">Digital intake forms</div>
+          <div class="feat-d">Send HIPAA-compliant intake forms before the first session. Clients complete them on any device. Notes stored securely.</div>
+        </div>
+        <div class="feat">
+          <div class="feat-icon">💬</div>
+          <div class="feat-n">Automated reminders</div>
+          <div class="feat-d">SMS and email reminders reduce no-shows by up to 94%. Customisable timing — 48 hours, 24 hours, and 1 hour before.</div>
+        </div>
+        <div class="feat">
+          <div class="feat-icon">🎥</div>
+          <div class="feat-n">Telehealth built in</div>
+          <div class="feat-d">HIPAA-compliant video sessions, no third-party integrations needed. Works in the browser, no downloads for clients.</div>
+        </div>
+        <div class="feat">
+          <div class="feat-icon">💳</div>
+          <div class="feat-n">Session billing</div>
+          <div class="feat-d">Send invoices after sessions, track payments, and get paid on time. Integrates with Stripe for cards and ACH transfers.</div>
+        </div>
+        <div class="feat">
+          <div class="feat-icon">🔒</div>
+          <div class="feat-n">HIPAA from the ground up</div>
+          <div class="feat-d">End-to-end encryption, Business Associate Agreement included, audit logs, and secure data storage. Not an afterthought.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="quote-section">
+      <div class="quote-inner">
+        <div>
+          <div class="quote-label">From our beta testers</div>
+        </div>
+        <div>
+          <blockquote>"I was spending nearly three hours every week just on scheduling and sending reminders. TheraBook gave me that time back. I can see two more clients a week because of it."</blockquote>
+          <p class="quote-attr">— Beta tester, solo private practice therapist, 5 years in</p>
+        </div>
+      </div>
+    </section>
   </div>
 
-  <main>
-    <section class="hero">
-      <div class="container">
-        <div class="hero-grid">
-          <div class="hero-content">
-            <span class="eyebrow"><span class="eyebrow-dot"></span>HIPAA-compliant scheduling</span>
-            <h1>Scheduling that actually respects HIPAA — and your time.</h1>
-            <p class="hero-subtitle">SimplePractice charges hundreds a month and requires a week to set up. TheraBook gives solo therapists secure, compliant scheduling in under 10 minutes.</p>
-            <div class="hero-cta">
-              <a href="#early-access" class="btn btn-primary">
-                Get early access
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-              </a>
-              <a href="#features" class="btn btn-outline">See features</a>
-            </div>
-            <div class="hero-tags">
-              <span class="tag">HIPAA-compliant</span>
-              <span class="tag">No per-seat pricing</span>
-              <span class="tag">Setup in minutes</span>
-              <span class="tag">Independent therapists</span>
-            </div>
-          </div>
-
-          <div class="hero-visual reveal">
-            <div class="calendar-header">
-              <h3>Today — Thursday</h3>
-              <span>3 appointments</span>
-            </div>
-            <div class="appt">
-              <span class="appt-time">9:00 AM</span>
-              <span class="appt-name">Sarah K. — Initial consult</span>
-              <span class="appt-badge badge-confirmed">Confirmed</span>
-            </div>
-            <div class="appt">
-              <span class="appt-time">11:00 AM</span>
-              <span class="appt-name">James R. — Follow-up</span>
-              <span class="appt-badge badge-confirmed">Confirmed</span>
-            </div>
-            <div class="appt">
-              <span class="appt-time">2:30 PM</span>
-              <span class="appt-name">Emily T. — Session 4</span>
-              <span class="appt-badge badge-pending">Intake pending</span>
-            </div>
-            <div class="hipaa-badge">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-              End-to-end encrypted · HIPAA compliant
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="problem">
-      <div class="container">
-        <div class="problem-grid">
-          <div class="problem-card left reveal">
-            <h3>The problem with existing tools</h3>
-            <ul>
-              <li><span class="x-icon">✗</span> EHR platforms priced for clinics, not solo practice</li>
-              <li><span class="x-icon">✗</span> HIPAA BAAs buried in expensive enterprise tiers</li>
-              <li><span class="x-icon">✗</span> Complex setup requires IT support just to go live</li>
-              <li><span class="x-icon">✗</span> Generic scheduling tools have zero compliance</li>
-            </ul>
-          </div>
-          <div class="problem-card right reveal">
-            <h3>TheraBook is different</h3>
-            <ul>
-              <li><span class="check-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>HIPAA BAA included on every plan</li>
-              <li><span class="check-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Live booking page ready in under 10 minutes</li>
-              <li><span class="check-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Flat monthly rate — no per-session or per-seat fees</li>
-              <li><span class="check-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>Built for therapists, not hospitals</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="features" id="features">
-      <div class="container">
-        <div class="section-header reveal">
-          <h2>Everything a solo practice needs</h2>
-          <p>No unnecessary features. No missing ones.</p>
-        </div>
-        <div class="features-grid">
-          <div class="feature-card reveal">
-            <div class="feature-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            </div>
-            <h3>Two-way calendar sync</h3>
-            <p>Google and Outlook calendars stay in sync automatically. No double-bookings, ever.</p>
-          </div>
-          <div class="feature-card reveal">
-            <div class="feature-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            </div>
-            <h3>HIPAA-compliant by default</h3>
-            <p>Encrypted client data, signed BAA on every plan, and no PHI stored in third-party tools.</p>
-          </div>
-          <div class="feature-card reveal">
-            <div class="feature-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-            </div>
-            <h3>Secure intake forms</h3>
-            <p>Digital intake with e-signature. Clients complete forms before arrival — you arrive prepared.</p>
-          </div>
-          <div class="feature-card reveal">
-            <div class="feature-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 11.39 18a19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 3.18 2 2 0 0 1 4.11 1h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-            </div>
-            <h3>Automated reminders</h3>
-            <p>SMS and email reminders sent 48 and 24 hours before appointments. No-shows drop dramatically.</p>
-          </div>
-          <div class="feature-card reveal">
-            <div class="feature-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-            </div>
-            <h3>Payment collection</h3>
-            <p>Stripe and PayPal deposits at time of booking. Co-pay collection built in. No chasing invoices.</p>
-          </div>
-          <div class="feature-card reveal">
-            <div class="feature-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-            </div>
-            <h3>Earnings dashboard</h3>
-            <p>One page. Monthly revenue, upcoming payments, and cancellation rate — at a glance.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="how" id="how-it-works">
-      <div class="container">
-        <div class="section-header reveal">
-          <h2>Up and running in minutes</h2>
-          <p>No IT support. No training sessions. No migration headaches.</p>
-        </div>
-        <div class="steps-grid">
-          <div class="step reveal">
-            <div class="step-num">1</div>
-            <h3>Set up your profile</h3>
-            <p>Add your session types, duration, and rates. Connect your Google or Outlook calendar.</p>
-          </div>
-          <div class="step reveal">
-            <div class="step-num">2</div>
-            <h3>Share your booking link</h3>
-            <p>Send clients your secure booking page. They pick a slot, complete intake, and pay the deposit.</p>
-          </div>
-          <div class="step reveal">
-            <div class="step-num">3</div>
-            <h3>See clients, not admin</h3>
-            <p>Reminders send automatically. Your dashboard shows the day ahead. You focus on the session.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="early-access" id="early-access">
-      <div class="container">
-        <h2>Join the early access list</h2>
-        <p>We're launching a private beta for independent therapists. No credit card. No commitment.</p>
-        <form class="waitlist-form" id="waitlistForm" novalidate>
-          <input type="email" id="email" placeholder="Your work email" required autocomplete="email">
-          <button type="submit" class="btn-white">Get early access</button>
+  <section class="cta" id="cta">
+    <div class="container">
+      <h2>Give your practice<br>the tools it <em>deserves.</em></h2>
+      <p>Join 1,200+ therapists waiting for early access.</p>
+      <div id="waitlistSection2">
+        <form class="cta-form" id="waitlistForm2" novalidate>
+          <input type="email" id="email2" placeholder="you@practice.com" required>
+          <button class="btn-cta" type="submit">Join the waitlist</button>
         </form>
-        <p class="success-msg" id="successMsg">You're on the list. We'll be in touch soon.</p>
-        <p class="waitlist-note">No spam. Unsubscribe anytime.</p>
       </div>
-    </section>
-  </main>
+      <div id="successMsg2">✓ You're on the waitlist — we'll be in touch soon.</div>
+    </div>
+  </section>
+</main>
 
-  <footer>
-    <p>© 2025 TheraBook · Built by <a href="https://overbytelabs.com" target="_blank" rel="noopener">Overbyte</a></p>
-  </footer>
+<footer>
+  <div class="container">
+    <div class="foot-inner">
+      <span class="foot-copy">© 2026 TheraBook · Overbytelabs</span>
+      <div class="foot-links">
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="#">HIPAA Policy</a>
+        <a href="mailto:info@overbytelabs.com">Contact</a>
+      </div>
+    </div>
+  </div>
+</footer>
 
-  <script>
-    const menuBtn = document.querySelector('.mobile-menu-btn');
-    const mobileMenu = document.getElementById('mobileMenu');
-    menuBtn.addEventListener('click', () => mobileMenu.classList.toggle('open'));
-    mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => mobileMenu.classList.remove('open')));
-
-    const revealObserver = new IntersectionObserver((entries) => {
-      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); revealObserver.unobserve(e.target); } });
-    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-    document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
-
-    document.getElementById('waitlistForm').addEventListener('submit', async function(e) {
+<script>
+  function wire(fid, eid, sid, mid) {
+    document.getElementById(fid).addEventListener('submit', async function(e) {
       e.preventDefault();
-      const email = document.getElementById('email').value.trim();
+      const email = document.getElementById(eid).value.trim();
       if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return;
       const btn = this.querySelector('button');
-      btn.disabled = true;
-      btn.textContent = 'Sending\u2026';
+      btn.disabled = true; btn.textContent = 'Sending…';
       try {
-        const res = await fetch('default.php', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email })
-        });
-        const data = await res.json();
-        if (data.ok) {
-          this.style.display = 'none';
-          document.getElementById('successMsg').style.display = 'block';
-        } else {
-          btn.disabled = false;
-          btn.textContent = 'Try again';
-          alert(data.error || 'Something went wrong. Please try again.');
-        }
-      } catch (_) {
-        btn.disabled = false;
-        btn.textContent = 'Try again';
-        alert('Network error. Please try again.');
-      }
+        const r = await fetch('default.php', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});
+        const d = await r.json();
+        if (d.ok) {
+          document.getElementById(sid).style.display = 'none';
+          document.getElementById(mid).style.display = 'block';
+        } else { btn.disabled = false; btn.textContent = 'Try again'; alert(d.error || 'Something went wrong.'); }
+      } catch(_) { btn.disabled = false; btn.textContent = 'Try again'; alert('Network error. Please try again.'); }
     });
-  </script>
+  }
+  wire('waitlistForm','email','waitlistSection','successMsg');
+  wire('waitlistForm2','email2','waitlistSection2','successMsg2');
+</script>
 </body>
 </html>

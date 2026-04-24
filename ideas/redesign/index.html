@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Overbyte — SaaS engineering for day-one momentum</title>
+  <meta name="description" content="We design, build, and ship dependable web apps and APIs. Senior engineers with 10+ years experience.">
+
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect x='8' y='4' width='16' height='24' rx='3' fill='%231F4D3A'/><rect x='11' y='8' width='10' height='3' rx='1' fill='%23FAF7F2'/><rect x='11' y='14' width='10' height='2' rx='1' fill='%23FAF7F2'/><rect x='11' y='19' width='6' height='2' rx='1' fill='%23FAF7F2'/></svg>">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400&family=Lexend:wght@600;700&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            sand: {
+              50: '#FAF7F2',
+              100: '#F3EEE5',
+              200: '#E7DECE',
+              300: '#D9CCB5',
+            },
+            pine: {
+              50: '#E6EFEA',
+              100: '#CFE3D9',
+              600: '#1F4D3A',
+              700: '#173B2B',
+              900: '#0F2A1D',
+            },
+            moss: {
+              300: '#AFC79A',
+              400: '#8AAD68',
+              500: '#6C9A5B',
+            },
+            bark: {
+              400: '#8A6A52',
+              500: '#6B4F3B',
+              700: '#4B3727',
+            },
+            fog: {
+              300: '#C9D0C8',
+              400: '#A7B0A4',
+              600: '#6E746C',
+            },
+            ink: {
+              900: '#1C1C1A',
+            },
+          },
+          fontFamily: {
+            heading: ['Lexend', 'sans-serif'],
+            body: ['Atkinson Hyperlegible', 'sans-serif'],
+          },
+        },
+      },
+    }
+  </script>
+
+  <style>
+    * {
+      scroll-snap-type: y mandatory;
+      scroll-behavior: smooth;
+    }
+
+    html {
+      scroll-snap-type: y mandatory;
+    }
+
+    section {
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation: none !important;
+        transition: none !important;
+        scroll-snap-type: none !important;
+      }
+    }
+
+    .fade-in {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    .header-blur {
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+  </style>
+</head>
+<body class="font-body text-ink-900 bg-sand-50 antialiased">
+
+  <!-- Header -->
+  <header class="fixed top-0 left-0 right-0 z-50 h-16 bg-sand-50/90 header-blur border-b border-sand-200">
+    <div class="max-w-7xl mx-auto h-full px-6 flex items-center justify-between">
+      <!-- Logo -->
+      <a href="#" class="flex items-center gap-2">
+        <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect x="6" y="4" width="20" height="24" rx="3" fill="#173B2B"/>
+          <rect x="10" y="8" width="12" height="4" rx="1" fill="#FAF7F2"/>
+          <rect x="10" y="15" width="12" height="3" rx="1" fill="#FAF7F2"/>
+          <rect x="10" y="21" width="7" height="3" rx="1" fill="#FAF7F2"/>
+        </svg>
+        <span class="font-heading font-bold text-lg text-pine-700">Overbyte</span>
+      </a>
+
+      <!-- Desktop Nav -->
+      <nav class="hidden md:flex items-center gap-8 text-sm font-heading font-semibold">
+        <a href="#packages" class="text-ink-900/70 hover:text-pine-700 transition-colors">Packages</a>
+        <a href="#services" class="text-ink-900/70 hover:text-pine-700 transition-colors">Services</a>
+        <a href="#trust" class="text-ink-900/70 hover:text-pine-700 transition-colors">Trust</a>
+        <a href="#about" class="text-ink-900/70 hover:text-pine-700 transition-colors">About</a>
+        <a href="#faq" class="text-ink-900/70 hover:text-pine-700 transition-colors">FAQ</a>
+        <a href="#contact" class="text-ink-900/70 hover:text-pine-700 transition-colors">Contact</a>
+      </nav>
+
+      <!-- Mobile menu button -->
+      <button id="mobile-menu-btn" class="md:hidden p-2" aria-label="Toggle menu" aria-expanded="false">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Mobile Nav -->
+    <div id="mobile-menu" class="hidden md:hidden bg-sand-50/95 header-blur border-b border-sand-200 px-6 pb-4">
+      <nav class="flex flex-col gap-4 text-sm font-heading font-semibold pt-4">
+        <a href="#packages" class="text-ink-900/70 hover:text-pine-700 transition-colors">Packages</a>
+        <a href="#services" class="text-ink-900/70 hover:text-pine-700 transition-colors">Services</a>
+        <a href="#trust" class="text-ink-900/70 hover:text-pine-700 transition-colors">Trust</a>
+        <a href="#about" class="text-ink-900/70 hover:text-pine-700 transition-colors">About</a>
+        <a href="#faq" class="text-ink-900/70 hover:text-pine-700 transition-colors">FAQ</a>
+        <a href="#contact" class="text-ink-900/70 hover:text-pine-700 transition-colors">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- 1. HERO -->
+    <section class="min-h-screen dvh flex items-center pt-16" style="background: linear-gradient(135deg, #E6EFEA 0%, #FAF7F2 40%, #F3EEE5 100%);">
+      <div class="max-w-7xl mx-auto px-6 py-16 w-full">
+        <div class="grid lg:grid-cols-12 gap-12 items-center">
+          <!-- Left column (7/12) -->
+          <div class="lg:col-span-7 space-y-8">
+            <div class="fade-in">
+              <span class="inline-block border borderpine-700/15 rounded-full px-4 py-1.5 text-sm bg-sand-100 text-ink-900/80">
+                10+ yrs engineering experience
+              </span>
+            </div>
+
+            <h1 class="fade-in font-heading font-bold text-4xl md:text-5xl lg:text-6xl leading-tight tracking-tight text-ink-900">
+              SaaS engineering for day‑one momentum.
+            </h1>
+
+            <p class="fade-in text-lg text-ink-900/70 leading-relaxed max-w-2xl">
+              We design, build, and ship dependable web apps and APIs. As a just‑in‑case service, we also handle essential marketing and e‑commerce so you can move with one small team.
+            </p>
+
+            <div class="fade-in flex flex-wrap gap-4">
+              <a href="#contact" class="inline-flex items-center gap-2 px-6 py-3 bg-pine-700 hover:bg-pine-600 text-white font-heading font-semibold rounded-xl transition-colors">
+                Start a conversation
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+              </a>
+              <a href="#packages" class="inline-flex items-center gap-2 px-6 py-3 border border-sand-200 bg-white/70 hover:bg-white text-ink-900 font-heading font-semibold rounded-xl transition-colors">
+                See starter packages
+              </a>
+            </div>
+
+            <div class="fade-in flex flex-wrap gap-3">
+              <span class="border border-pine-700/15 rounded-full px-4 py-1.5 text-sm bg-sand-100 text-ink-900/80">Accessible by default</span>
+              <span class="border border-pine-700/15 rounded-full px-4 py-1.5 text-sm bg-sand-100 text-ink-900/80">Transparent pricing</span>
+              <span class="border border-pine-700/15 rounded-full px-4 py-1.5 text-sm bg-sand-100 text-ink-900/80">Security‑minded</span>
+              <span class="border border-pine-700/15 rounded-full px-4 py-1.5 text-sm bg-sand-100 text-ink-900/80">Own your data</span>
+            </div>
+          </div>
+
+          <!-- Right column (5/12) - Card -->
+          <div class="lg:col-span-5 fade-in">
+            <div class="border border-sand-200 rounded-2xl bg-white p-8 shadow-sm">
+              <h2 class="font-heading font-semibold text-xl mb-6 text-ink-900">Quick facts</h2>
+              <dl class="space-y-4">
+                <div class="flex justify-between items-start border-b border-sand-200 pb-4">
+                  <dt class="text-fog-600 text-sm">Focus</dt>
+                  <dd class="text-ink-900 font-medium text-right">SaaS product engineering</dd>
+                </div>
+                <div class="flex justify-between items-start border-b border-sand-200 pb-4">
+                  <dt class="text-fog-600 text-sm">Also</dt>
+                  <dd class="text-ink-900 font-medium text-right">Marketing & e‑commerce (as needed)</dd>
+                </div>
+                <div class="flex justify-between items-start border-b border-sand-200 pb-4">
+                  <dt class="text-fog-600 text-sm">Team</dt>
+                  <dd class="text-ink-900 font-medium text-right">Senior engineers (10+ yrs)</dd>
+                </div>
+                <div class="flex justify-between items-start">
+                  <dt class="text-fog-600 text-sm">Fit</dt>
+                  <dd class="text-ink-900 font-medium text-right">B2B & B2C</dd>
+                </div>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. PACKAGES -->
+    <section id="packages" class="min-h-screen dvh flex items-center pt-16 bg-white">
+      <div class="max-w-7xl mx-auto px-6 py-16 w-full">
+        <div class="text-center mb-16 fade-in">
+          <h2 class="font-heading font-bold text-3xl md:text-4xl text-ink-900 mb-4">Starter packages</h2>
+          <p class="text-ink-900/70 text-lg max-w-xl mx-auto">Lean, time‑boxed ways to start together. Good for a brand‑new company.</p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-8">
+          <!-- Discovery Sprint -->
+          <div class="fade-in border border-sand-200 rounded-2xl bg-white p-8 hover:shadow-lg transition-shadow">
+            <h3 class="font-heading font-semibold text-xl text-ink-900 mb-3">Discovery Sprint</h3>
+            <p class="text-ink-900/70 mb-6">Map goals, risks, and the smallest valuable release.</p>
+            <ul class="space-y-3 text-sm text-ink-900/80">
+              <li class="flex items-start gap-2">
+                <svg class="w-5 h-5 text-moss-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                User journeys & success metrics
+              </li>
+              <li class="flex items-start gap-2">
+                <svg class="w-5 h-5 text-moss-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                Architecture + build plan
+              </li>
+              <li class="flex items-start gap-2">
+                <svg class="w-5 h-5 text-moss-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                Prioritized backlog
+              </li>
+            </ul>
+          </div>
+
+          <!-- MVP Build -->
+          <div class="fade-in border border-sand-200 rounded-2xl bg-white p-8 hover:shadow-lg transition-shadow">
+            <h3 class="font-heading font-semibold text-xl text-ink-900 mb-3">MVP Build</h3>
+            <p class="text-ink-900/70 mb-6">Ship a usable first version with auth, billing, and analytics.</p>
+            <ul class="space-y-3 text-sm text-ink-900/80">
+              <li class="flex items-start gap-2">
+                <svg class="w-5 h-5 text-moss-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                Web app + API
+              </li>
+              <li class="flex items-start gap-2">
+                <svg class="w-5 h-5 text-moss-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                Subscriptions & emails
+              </li>
+              <li class="flex items-start gap-2">
+                <svg class="w-5 h-5 text-moss-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                Monitoring & docs
+              </li>
+            </ul>
+          </div>
+
+          <!-- Go-to-Market Assist -->
+          <div class="fade-in border border-sand-200 rounded-2xl bg-white p-8 hover:shadow-lg transition-shadow">
+            <h3 class="font-heading font-semibold text-xl text-ink-900 mb-3">Go‑to‑Market Assist</h3>
+            <p class="text-ink-900/70 mb-6">Lightweight marketing to support launch.</p>
+            <ul class="space-y-3 text-sm text-ink-900/80">
+              <li class="flex items-start gap-2">
+                <svg class="w-5 h-5 text-moss-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                Landing page & basic SEO
+              </li>
+              <li class="flex items-start gap-2">
+                <svg class="w-5 h-5 text-moss-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                Content outline & CRM setup
+              </li>
+              <li class="flex items-start gap-2">
+                <svg class="w-5 h-5 text-moss-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                Analytics & experiments
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. SERVICES -->
+    <section id="services" class="min-h-screen dvh flex items-center pt-16 bg-sand-50">
+      <div class="max-w-7xl mx-auto px-6 py-16 w-full">
+        <div class="text-center mb-16 fade-in">
+          <h2 class="font-heading font-bold text-3xl md:text-4xl text-ink-900 mb-4">What we do</h2>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-8">
+          <!-- SaaS Engineering -->
+          <div class="fade-in border border-sand-200 rounded-2xl bg-white p-8 hover:shadow-lg transition-shadow">
+            <div class="w-12 h-12 bg-pine-100 rounded-xl flex items-center justify-center mb-6">
+              <svg class="w-6 h-6 text-pine-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+            </div>
+            <h3 class="font-heading font-semibold text-xl text-ink-900 mb-3">SaaS Engineering</h3>
+            <p class="text-ink-900/70">Product discovery, UX, full‑stack web, and automation.</p>
+          </div>
+
+          <!-- Marketing (as needed) -->
+          <div class="fade-in border border-sand-200 rounded-2xl bg-white p-8 hover:shadow-lg transition-shadow">
+            <div class="w-12 h-12 bg-moss-300/30 rounded-xl flex items-center justify-center mb-6">
+              <svg class="w-6 h-6 text-moss-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/></svg>
+            </div>
+            <h3 class="font-heading font-semibold text-xl text-ink-900 mb-3">Marketing (as needed)</h3>
+            <p class="text-ink-900/70">Positioning, landing pages, content, analytics.</p>
+          </div>
+
+          <!-- E-commerce (backup) -->
+          <div class="fade-in border border-sand-200 rounded-2xl bg-white p-8 hover:shadow-lg transition-shadow">
+            <div class="w-12 h-12 bg-bark-400/20 rounded-xl flex items-center justify-center mb-6">
+              <svg class="w-6 h-6 text-bark-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+            </div>
+            <h3 class="font-heading font-semibold text-xl text-ink-900 mb-3">E‑commerce (backup)</h3>
+            <p class="text-ink-900/70">Shopify/headless, payments, memberships, CRO.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. TRUST -->
+    <section id="trust" class="min-h-screen dvh flex items-center pt-16 bg-white">
+      <div class="max-w-7xl mx-auto px-6 py-16 w-full">
+        <div class="text-center mb-16 fade-in">
+          <h2 class="font-heading font-bold text-3xl md:text-4xl text-ink-900 mb-4">How we de‑risk working with a new studio</h2>
+        </div>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <!-- Time-boxed phases -->
+          <div class="fade-in border border-sand-200 rounded-2xl bg-white p-8 hover:shadow-lg transition-shadow">
+            <div class="w-10 h-10 bg-pine-50 rounded-lg flex items-center justify-center mb-5">
+              <svg class="w-5 h-5 text-pine-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+            <h3 class="font-heading font-semibold text-lg text-ink-900 mb-2">Time‑boxed phases</h3>
+            <p class="text-ink-900/70 text-sm">Clear scope & outcomes every 1–2 weeks.</p>
+          </div>
+
+          <!-- Open by default -->
+          <div class="fade-in border border-sand-200 rounded-2xl bg-white p-8 hover:shadow-lg transition-shadow">
+            <div class="w-10 h-10 bg-pine-50 rounded-lg flex items-center justify-center mb-5">
+              <svg class="w-5 h-5 text-pine-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+            </div>
+            <h3 class="font-heading font-semibold text-lg text-ink-900 mb-2">Open by default</h3>
+            <p class="text-ink-900/70 text-sm">Source, docs, and metrics shared early.</p>
+          </div>
+
+          <!-- Quality gates -->
+          <div class="fade-in border border-sand-200 rounded-2xl bg-white p-8 hover:shadow-lg transition-shadow">
+            <div class="w-10 h-10 bg-pine-50 rounded-lg flex items-center justify-center mb-5">
+              <svg class="w-5 h-5 text-pine-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            </div>
+            <h3 class="font-heading font-semibold text-lg text-ink-900 mb-2">Quality gates</h3>
+            <p class="text-ink-900/70 text-sm">Automated tests, reviews, and releases.</p>
+          </div>
+
+          <!-- Straightforward pricing -->
+          <div class="fade-in border border-sand-200 rounded-2xl bg-white p-8 hover:shadow-lg transition-shadow">
+            <div class="w-10 h-10 bg-pine-50 rounded-lg flex items-center justify-center mb-5">
+              <svg class="w-5 h-5 text-pine-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+            </div>
+            <h3 class="font-heading font-semibold text-lg text-ink-900 mb-2">Straightforward pricing</h3>
+            <p class="text-ink-900/70 text-sm">Fixed‑fee phases or weekly rate — no surprises.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. ABOUT -->
+    <section id="about" class="min-h-screen dvh flex items-center pt-16 bg-sand-50">
+      <div class="max-w-7xl mx-auto px-6 py-16 w-full">
+        <div class="text-center mb-16 fade-in">
+          <h2 class="font-heading font-bold text-3xl md:text-4xl text-ink-900 mb-4">About</h2>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          <!-- About Overbyte -->
+          <div class="fade-in border border-sand-200 rounded-2xl bg-white p-8 hover:shadow-lg transition-shadow">
+            <h3 class="font-heading font-semibold text-xl text-ink-900 mb-4">About Overbyte</h3>
+            <p class="text-ink-900/70 leading-relaxed">
+              Founded recently; backed by an engineering team with more than 10 years of experience shipping products. We value clarity, accessibility, and maintainability.
+            </p>
+          </div>
+
+          <!-- Ways of working -->
+          <div class="fade-in border border-sand-200 rounded-2xl bg-white p-8 hover:shadow-lg transition-shadow">
+            <h3 class="font-heading font-semibold text-xl text-ink-900 mb-4">Ways of working</h3>
+            <ol class="space-y-4 text-ink-900/70">
+              <li class="flex items-start gap-3">
+                <span class="flex-shrink-0 w-7 h-7 bg-pine-100 text-pine-700 font-heading font-semibold rounded-full flex items-center justify-center text-sm">1</span>
+                <span>Start with a Discovery Sprint.</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <span class="flex-shrink-0 w-7 h-7 bg-pine-100 text-pine-700 font-heading font-semibold rounded-full flex items-center justify-center text-sm">2</span>
+                <span>Ship small slices weekly.</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <span class="flex-shrink-0 w-7 h-7 bg-pine-100 text-pine-700 font-heading font-semibold rounded-full flex items-center justify-center text-sm">3</span>
+                <span>Document & automate from day one.</span>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. FAQ -->
+    <section id="faq" class="min-h-screen dvh flex items-center pt-16 bg-white">
+      <div class="max-w-3xl mx-auto px-6 py-16 w-full">
+        <div class="text-center mb-16 fade-in">
+          <h2 class="font-heading font-bold text-3xl md:text-4xl text-ink-900 mb-4">FAQ</h2>
+        </div>
+
+        <div class="space-y-4">
+          <!-- FAQ 1 -->
+          <details class="fade-in border border-sand-200 rounded-xl bg-white group">
+            <summary class="flex items-center justify-between p-6 cursor-pointer list-none font-heading font-semibold text-ink-900">
+              <span>Can you work with both startups and established teams?</span>
+              <svg class="w-5 h-5 text-fog-400 group-hover:text-fog-600 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </summary>
+            <div class="px-6 pb-6 text-ink-900/70">
+              Yes — we tailor scope and process for B2B or B2C, and can embed with your team or deliver turnkey.
+            </div>
+          </details>
+
+          <!-- FAQ 2 -->
+          <details class="fade-in border border-sand-200 rounded-xl bg-white group">
+            <summary class="flex items-center justify-between p-6 cursor-pointer list-none font-heading font-semibold text-ink-900">
+              <span>How do you price?</span>
+              <svg class="w-5 h-5 text-fog-400 group-hover:text-fog-600 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </summary>
+            <div class="px-6 pb-6 text-ink-900/70">
+              Time‑boxed phases with fixed fees, or a weekly rate. You always know the next milestone and cost.
+            </div>
+          </details>
+
+          <!-- FAQ 3 -->
+          <details class="fade-in border border-sand-200 rounded-xl bg-white group">
+            <summary class="flex items-center justify-between p-6 cursor-pointer list-none font-heading font-semibold text-ink-900">
+              <span>What about references?</span>
+              <svg class="w-5 h-5 text-fog-400 group-hover:text-fog-600 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </summary>
+            <div class="px-6 pb-6 text-ink-900/70">
+              We're new as Overbyte, but senior as individuals. We're happy to provide references and code samples privately.
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. CONTACT -->
+    <section id="contact" class="min-h-screen dvh flex items-center pt-16 bg-sand-100">
+      <div class="max-w-7xl mx-auto px-6 py-16 w-full">
+        <div class="text-center mb-12 fade-in">
+          <h2 class="font-heading font-bold text-3xl md:text-4xl text-ink-900 mb-4">Let's talk</h2>
+          <p class="text-ink-900/70 text-lg mb-4">Fill in the form below or email us directly.</p>
+          <a href="mailto:info@overbytelabs.com" class="text-pine-700 underline hover:text-pine-600 transition-colors">info@overbytelabs.com</a>
+        </div>
+
+        <div class="max-w-xl mx-auto">
+          <form id="contact-form" class="fade-in border border-sand-200 rounded-2xl bg-white p-8 shadow-sm" novalidate>
+            <div class="grid sm:grid-cols-2 gap-4 mb-4">
+              <div>
+                <label for="name" class="block text-sm font-medium text-ink-900 mb-2">Name</label>
+                <input type="text" id="name" name="name" required class="w-full border border-sand-200 rounded-lg px-4 py-3 focus:outline-none focus:border-pine-700 transition-colors" placeholder="Your name">
+                <span class="text-red-600 text-sm mt-1 hidden" data-error="name"></span>
+              </div>
+              <div>
+                <label for="email" class="block text-sm font-medium text-ink-900 mb-2">Work email</label>
+                <input type="email" id="email" name="email" required class="w-full border border-sand-200 rounded-lg px-4 py-3 focus:outline-none focus:border-pine-700 transition-colors" placeholder="you@company.com">
+                <span class="text-red-600 text-sm mt-1 hidden" data-error="email"></span>
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label for="company" class="block text-sm font-medium text-ink-900 mb-2">Company</label>
+              <input type="text" id="company" name="company" class="w-full border border-sand-200 rounded-lg px-4 py-3 focus:outline-none focus:border-pine-700 transition-colors" placeholder="Your company">
+            </div>
+
+            <div class="mb-6">
+              <label for="message" class="block text-sm font-medium text-ink-900 mb-2">Message</label>
+              <textarea id="message" name="message" rows="4" required class="w-full border border-sand-200 rounded-lg px-4 py-3 focus:outline-none focus:border-pine-700 transition-colors resize-none" placeholder="Tell us about your project..."></textarea>
+              <span class="text-red-600 text-sm mt-1 hidden" data-error="message"></span>
+            </div>
+
+            <button type="submit" class="w-full bg-pine-700 hover:bg-pine-600 text-white font-heading font-semibold py-3 px-6 rounded-xl transition-colors flex items-center justify-center gap-2">
+              <span>Send message</span>
+              <svg id="loading-spinner" class="hidden w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+            </button>
+
+            <p id="form-success" class="hidden text-pine-700 text-center mt-4 font-medium"></p>
+            <p id="form-error" class="hidden text-red-600 text-center mt-4"></p>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-pine-700 text-white py-12 text-center">
+    <p class="text-white/80 text-sm">© 2024 Overbyte. All rights reserved.</p>
+  </footer>
+
+  <script>
+    // Mobile menu toggle
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    mobileMenuBtn.addEventListener('click', () => {
+      const isOpen = !mobileMenu.classList.contains('hidden');
+      mobileMenu.classList.toggle('hidden');
+      mobileMenuBtn.setAttribute('aria-expanded', !isOpen);
+    });
+
+    // Close mobile menu on link click
+    mobileMenu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.add('hidden');
+        mobileMenuBtn.setAttribute('aria-expanded', 'false');
+      });
+    });
+
+    // Scroll animations with IntersectionObserver
+    const observerOptions = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.1
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          anime({
+            targets: entry.target,
+            opacity: [0, 1],
+            translateY: [20, 0],
+            duration: 600,
+            easing: 'easeOutQuad',
+            delay: entry.target.dataset.delay || 0
+          });
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+
+    // Observe all fade-in elements with staggered delays
+    document.querySelectorAll('.fade-in').forEach((el, index) => {
+      el.dataset.delay = index % 5 * 100;
+      observer.observe(el);
+    });
+
+    // Form handling
+    const form = document.getElementById('contact-form');
+    const loadingSpinner = document.getElementById('loading-spinner');
+    const successMsg = document.getElementById('form-success');
+    const errorMsg = document.getElementById('form-error');
+
+    function showError(field, message) {
+      const errorEl = document.querySelector(`[data-error="${field}"]`);
+      const inputEl = document.getElementById(field);
+      if (errorEl) {
+        errorEl.textContent = message;
+        errorEl.classList.remove('hidden');
+      }
+      if (inputEl) {
+        inputEl.classList.add('border-red-500');
+      }
+    }
+
+    function clearErrors() {
+      document.querySelectorAll('[data-error]').forEach(el => {
+        el.classList.add('hidden');
+        el.textContent = '';
+      });
+      document.querySelectorAll('input, textarea').forEach(el => {
+        el.classList.remove('border-red-500');
+      });
+      successMsg.classList.add('hidden');
+      errorMsg.classList.add('hidden');
+    }
+
+    function validateForm(data) {
+      let valid = true;
+
+      if (!data.name.trim()) {
+        showError('name', 'Please enter your name');
+        valid = false;
+      }
+
+      if (!data.email.trim()) {
+        showError('email', 'Please enter your email');
+        valid = false;
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+        showError('email', 'Please enter a valid email');
+        valid = false;
+      }
+
+      if (!data.message.trim()) {
+        showError('message', 'Please enter a message');
+        valid = false;
+      }
+
+      return valid;
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearErrors();
+
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData);
+
+      if (!validateForm(data)) return;
+
+      const submitBtn = form.querySelector('button[type="submit"]');
+      submitBtn.disabled = true;
+      submitBtn.querySelector('span').textContent = 'Sending...';
+      loadingSpinner.classList.remove('hidden');
+
+      try {
+        const response = await fetch('default.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (result.ok) {
+          successMsg.textContent = "Thank you! We'll be in touch within one business day.";
+          successMsg.classList.remove('hidden');
+          form.reset();
+        } else {
+          errorMsg.textContent = result.error || 'Something went wrong. Please try again.';
+          errorMsg.classList.remove('hidden');
+        }
+      } catch (err) {
+        errorMsg.textContent = 'Something went wrong. Please try again.';
+        errorMsg.classList.remove('hidden');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.querySelector('span').textContent = 'Send message';
+        loadingSpinner.classList.add('hidden');
+      }
+    });
+  </script>
+</body>
+</html>

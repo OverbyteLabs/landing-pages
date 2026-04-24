@@ -1,0 +1,1548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Overbyte — SaaS Engineering Studio</title>
+  <meta name="description" content="Senior engineers who build and launch your SaaS. From idea to production in weeks, not months.">
+
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect x='8' y='4' width='16' height='24' rx='3' fill='%231F4D3A'/><rect x='11' y='8' width='10' height='3' rx='1' fill='%23FAF7F2'/><rect x='11' y='14' width='10' height='2' rx='1' fill='%23FAF7F2'/><rect x='11' y='19' width='6' height='2' rx='1' fill='%23FAF7F2'/></svg>">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --sand-50: #FAF7F2;
+      --sand-100: #F3EEE5;
+      --sand-200: #E7DECE;
+      --sand-300: #D9CCB5;
+      --pine-50: #E6EFEA;
+      --pine-100: #CFE3D9;
+      --pine-600: #1F4D3A;
+      --pine-700: #173B2B;
+      --pine-900: #0F2A1D;
+      --moss-300: #AFC79A;
+      --moss-400: #8AAD68;
+      --moss-500: #6C9A5B;
+      --bark-400: #8A6A52;
+      --bark-500: #6B4F3B;
+      --bark-700: #4B3727;
+      --fog-300: #C9D0C8;
+      --fog-400: #A7B0A4;
+      --fog-600: #6E746C;
+      --ink-900: #1C1C1A;
+      --white: #ffffff;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 72px;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--white);
+      color: var(--ink-900);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    ::selection {
+      background: var(--pine-100);
+      color: var(--pine-900);
+    }
+
+    /* Layout */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    /* Header */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--sand-200);
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+      text-decoration: none;
+      color: var(--pine-700);
+    }
+
+    .logo svg {
+      width: 32px;
+      height: 32px;
+    }
+
+    .logo-text {
+      font-weight: 700;
+      font-size: 1.25rem;
+      letter-spacing: -0.02em;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .nav a {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--ink-900);
+      text-decoration: none;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+
+    .nav a:hover {
+      opacity: 1;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn-primary {
+      background: var(--pine-700);
+      color: var(--white);
+    }
+
+    .btn-primary:hover {
+      background: var(--pine-600);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--ink-900);
+      border: 1px solid var(--sand-200);
+    }
+
+    .btn-secondary:hover {
+      background: var(--sand-50);
+      border-color: var(--sand-300);
+    }
+
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.5rem;
+    }
+
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 72px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--white);
+      padding: 2rem;
+      z-index: 99;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .mobile-menu.open {
+      display: flex;
+    }
+
+    .mobile-menu a {
+      font-size: 1.125rem;
+      color: var(--ink-900);
+      text-decoration: none;
+      opacity: 0.7;
+    }
+
+    /* Sections */
+    section {
+      padding: 6rem 0;
+    }
+
+    /* Hero */
+    .hero {
+      padding-top: calc(72px + 5rem);
+      padding-bottom: 5rem;
+      background: linear-gradient(180deg, var(--pine-50) 0%, var(--white) 100%);
+      min-height: 90vh;
+      display: flex;
+      align-items: center;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+
+    .hero-content {
+      max-width: 580px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--pine-700);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 1.5rem;
+    }
+
+    .eyebrow-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--moss-500);
+      border-radius: 50%;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.5rem, 4.5vw, 3.5rem);
+      font-weight: 700;
+      color: var(--ink-900);
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-subtitle {
+      font-size: 1.125rem;
+      color: var(--ink-900);
+      opacity: 0.75;
+      margin-bottom: 2rem;
+      line-height: 1.7;
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 2.5rem;
+    }
+
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .tag {
+      font-size: 0.8rem;
+      padding: 0.4rem 0.875rem;
+      background: var(--sand-100);
+      border: 1px solid rgba(23, 59, 43, 0.08);
+      border-radius: 6px;
+      color: var(--ink-900);
+      opacity: 0.8;
+    }
+
+    /* Hero Card */
+    .hero-card {
+      background: var(--white);
+      border: 1px solid var(--sand-200);
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+    }
+
+    .hero-card h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--ink-900);
+      margin-bottom: 1.5rem;
+      letter-spacing: -0.01em;
+    }
+
+    .fact {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--sand-200);
+    }
+
+    .fact:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .fact-label {
+      font-size: 0.85rem;
+      color: var(--fog-600);
+    }
+
+    .fact-value {
+      font-weight: 600;
+      text-align: right;
+      font-size: 0.9rem;
+      max-width: 55%;
+    }
+
+    /* Problem/Solution */
+    .problem {
+      background: var(--sand-50);
+    }
+
+    .problem-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+    }
+
+    .problem-card {
+      padding: 2.5rem;
+      border-radius: 12px;
+    }
+
+    .problem-card.left {
+      background: var(--white);
+      border: 1px solid var(--sand-200);
+    }
+
+    .problem-card.right {
+      background: var(--pine-700);
+      color: var(--white);
+    }
+
+    .problem-card h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      letter-spacing: -0.01em;
+    }
+
+    .problem-card ul {
+      list-style: none;
+    }
+
+    .problem-card li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+      font-size: 0.95rem;
+    }
+
+    .problem-card li:last-child {
+      margin-bottom: 0;
+    }
+
+    .problem-card.right li {
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    .check-icon {
+      width: 20px;
+      height: 20px;
+      background: var(--moss-400);
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 2px;
+    }
+
+    .check-icon svg {
+      width: 12px;
+      height: 12px;
+      stroke: var(--white);
+    }
+
+    .problem-card.right .check-icon {
+      background: var(--moss-300);
+    }
+
+    /* Packages */
+    .packages {
+      background: var(--white);
+    }
+
+    .section-header {
+      text-align: center;
+      max-width: 640px;
+      margin: 0 auto 4rem;
+    }
+
+    .section-header h2 {
+      font-size: clamp(2rem, 3.5vw, 2.75rem);
+      font-weight: 700;
+      color: var(--ink-900);
+      margin-bottom: 1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .section-header p {
+      font-size: 1.1rem;
+      color: var(--ink-900);
+      opacity: 0.7;
+    }
+
+    .packages-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
+    .package-card {
+      background: var(--white);
+      border: 1px solid var(--sand-200);
+      border-radius: 12px;
+      padding: 2rem;
+      transition: all 0.25s ease;
+    }
+
+    .package-card:hover {
+      border-color: var(--pine-700);
+      box-shadow: 0 8px 30px rgba(31, 77, 58, 0.08);
+    }
+
+    .package-card h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--ink-900);
+      margin-bottom: 0.75rem;
+    }
+
+    .package-card > p {
+      font-size: 0.95rem;
+      color: var(--ink-900);
+      opacity: 0.7;
+      margin-bottom: 1.5rem;
+    }
+
+    .package-list {
+      list-style: none;
+    }
+
+    .package-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.625rem;
+      font-size: 0.875rem;
+      color: var(--ink-900);
+      opacity: 0.85;
+      margin-bottom: 0.625rem;
+    }
+
+    .package-list li::before {
+      content: '';
+      width: 18px;
+      height: 18px;
+      background: var(--pine-50);
+      border-radius: 4px;
+      flex-shrink: 0;
+      margin-top: 1px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231F4D3A' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+      background-size: 10px;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+
+    /* Services */
+    .services {
+      background: var(--sand-50);
+    }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
+    .service-card {
+      background: var(--white);
+      border: 1px solid var(--sand-200);
+      border-radius: 12px;
+      padding: 2rem;
+    }
+
+    .service-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.25rem;
+    }
+
+    .service-icon svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .service-card:nth-child(1) .service-icon {
+      background: var(--pine-50);
+    }
+
+    .service-card:nth-child(1) .service-icon svg {
+      stroke: var(--pine-700);
+    }
+
+    .service-card:nth-child(2) .service-icon {
+      background: rgba(172, 199, 154, 0.3);
+    }
+
+    .service-card:nth-child(2) .service-icon svg {
+      stroke: var(--moss-500);
+    }
+
+    .service-card:nth-child(3) .service-icon {
+      background: rgba(138, 106, 82, 0.15);
+    }
+
+    .service-card:nth-child(3) .service-icon svg {
+      stroke: var(--bark-500);
+    }
+
+    .service-card h3 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: var(--ink-900);
+      margin-bottom: 0.625rem;
+    }
+
+    .service-card p {
+      font-size: 0.9rem;
+      color: var(--ink-900);
+      opacity: 0.7;
+    }
+
+    /* Trust */
+    .trust {
+      background: var(--white);
+    }
+
+    .trust-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2rem;
+    }
+
+    .trust-card {
+      text-align: center;
+    }
+
+    .trust-icon {
+      width: 56px;
+      height: 56px;
+      background: var(--pine-50);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.25rem;
+    }
+
+    .trust-icon svg {
+      width: 24px;
+      height: 24px;
+      stroke: var(--pine-700);
+    }
+
+    .trust-card h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--ink-900);
+      margin-bottom: 0.5rem;
+    }
+
+    .trust-card p {
+      font-size: 0.875rem;
+      color: var(--ink-900);
+      opacity: 0.7;
+    }
+
+    /* About */
+    .about {
+      background: var(--sand-50);
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .about-card {
+      background: var(--white);
+      border: 1px solid var(--sand-200);
+      border-radius: 12px;
+      padding: 2.5rem;
+    }
+
+    .about-card h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--ink-900);
+      margin-bottom: 1rem;
+    }
+
+    .about-card p {
+      font-size: 0.95rem;
+      color: var(--ink-900);
+      opacity: 0.75;
+      line-height: 1.7;
+    }
+
+    .steps {
+      list-style: none;
+    }
+
+    .steps li {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+      font-size: 0.95rem;
+      color: var(--ink-900);
+      opacity: 0.85;
+    }
+
+    .steps li:last-child {
+      margin-bottom: 0;
+    }
+
+    .step-num {
+      width: 28px;
+      height: 28px;
+      background: var(--pine-100);
+      color: var(--pine-700);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+    }
+
+    /* FAQ */
+    .faq {
+      background: var(--white);
+    }
+
+    .faq-list {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .faq-item {
+      border: 1px solid var(--sand-200);
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      overflow: hidden;
+    }
+
+    .faq-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .faq-item summary {
+      padding: 1.25rem 1.5rem;
+      font-weight: 500;
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 0.2s;
+    }
+
+    .faq-item summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .faq-item summary:hover {
+      background: var(--sand-50);
+    }
+
+    .faq-item summary .icon {
+      width: 20px;
+      height: 20px;
+      transition: transform 0.25s;
+      opacity: 0.5;
+    }
+
+    .faq-item[open] summary .icon {
+      transform: rotate(180deg);
+    }
+
+    .faq-item .answer {
+      padding: 0 1.5rem 1.25rem;
+      font-size: 0.95rem;
+      color: var(--ink-900);
+      opacity: 0.75;
+      line-height: 1.7;
+    }
+
+    /* Contact */
+    .contact {
+      background: var(--sand-100);
+    }
+
+    .contact-inner {
+      max-width: 600px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .contact h2 {
+      font-size: clamp(2rem, 3.5vw, 2.75rem);
+      font-weight: 700;
+      color: var(--ink-900);
+      margin-bottom: 1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .contact > .container > .contact-inner > p {
+      font-size: 1.1rem;
+      color: var(--ink-900);
+      opacity: 0.7;
+      margin-bottom: 1rem;
+    }
+
+    .contact-email {
+      margin-bottom: 2.5rem;
+    }
+
+    .contact-email a {
+      color: var(--pine-700);
+      font-weight: 600;
+      text-decoration: underline;
+      text-underline-offset: 4px;
+    }
+
+    .contact-form {
+      background: var(--white);
+      border: 1px solid var(--sand-200);
+      border-radius: 16px;
+      padding: 2.5rem;
+      text-align: left;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-group.full {
+      grid-column: 1 / -1;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--ink-900);
+      margin-bottom: 0.5rem;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.875rem 1rem;
+      border: 1px solid var(--sand-200);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      background: var(--white);
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--pine-700);
+      box-shadow: 0 0 0 3px rgba(31, 77, 58, 0.1);
+    }
+
+    .form-group input.error,
+    .form-group textarea.error {
+      border-color: #dc2626;
+    }
+
+    .form-group textarea {
+      resize: none;
+      min-height: 100px;
+    }
+
+    .error-text {
+      font-size: 0.8rem;
+      color: #dc2626;
+      margin-top: 0.35rem;
+      display: none;
+    }
+
+    .form-group.has-error .error-text {
+      display: block;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 1rem;
+      background: var(--pine-700);
+      color: var(--white);
+      border: none;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .submit-btn:hover {
+      background: var(--pine-600);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: var(--white);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      display: none;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .form-message {
+      text-align: center;
+      margin-top: 1rem;
+      font-weight: 500;
+      display: none;
+    }
+
+    .form-message.success {
+      color: var(--pine-700);
+      display: block;
+    }
+
+    .form-message.error {
+      color: #dc2626;
+      display: block;
+    }
+
+    /* Footer */
+    footer {
+      background: var(--pine-700);
+      color: var(--white);
+      text-align: center;
+      padding: 2.5rem 0;
+    }
+
+    footer p {
+      opacity: 0.85;
+      font-size: 0.9rem;
+    }
+
+    /* Animations */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+      }
+
+      .hero-content {
+        max-width: 100%;
+      }
+
+      .problem-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .packages-grid,
+      .services-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .trust-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .about-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .nav {
+        display: none;
+      }
+
+      .header-cta {
+        display: none;
+      }
+
+      .mobile-menu-btn {
+        display: block;
+      }
+
+      .packages-grid,
+      .services-grid,
+      .trust-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .contact-form {
+        padding: 1.5rem;
+      }
+
+      section {
+        padding: 4rem 0;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+      }
+
+      .reveal {
+        opacity: 1;
+        transform: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container">
+      <div class="header-inner">
+        <a href="#" class="logo">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="6" y="4" width="20" height="24" rx="3" fill="#173B2B"/>
+            <rect x="10" y="8" width="12" height="4" rx="1" fill="#FAF7F2"/>
+            <rect x="10" y="15" width="12" height="3" rx="1" fill="#FAF7F2"/>
+            <rect x="10" y="21" width="7" height="3" rx="1" fill="#FAF7F2"/>
+          </svg>
+          <span class="logo-text">Overbyte</span>
+        </a>
+
+        <nav class="nav">
+          <a href="#packages">Packages</a>
+          <a href="#services">Services</a>
+          <a href="#trust">Trust</a>
+          <a href="#about">About</a>
+          <a href="#faq">FAQ</a>
+        </nav>
+
+        <a href="#contact" class="btn btn-primary header-cta">Start a project</a>
+
+        <button class="mobile-menu-btn" aria-label="Menu">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#packages">Packages</a>
+    <a href="#services">Services</a>
+    <a href="#trust">Trust</a>
+    <a href="#about">About</a>
+    <a href="#faq">FAQ</a>
+    <a href="#contact">Contact</a>
+  </div>
+
+  <main>
+    <!-- Hero -->
+    <section class="hero">
+      <div class="container">
+        <div class="hero-grid">
+          <div class="hero-content">
+            <span class="eyebrow">
+              <span class="eyebrow-dot"></span>
+              10+ years shipping products
+            </span>
+            <h1>Your SaaS, built and live in production — without the chaos.</h1>
+            <p class="hero-subtitle">You have the resources. Maybe the idea needs refining, or maybe it's ready and you need execution. We handle the engineering, deployment, and everything between here and launch.</p>
+            <div class="hero-cta">
+              <a href="#contact" class="btn btn-primary">
+                Let's build together
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </a>
+              <a href="#packages" class="btn btn-secondary">View packages</a>
+            </div>
+            <div class="hero-tags">
+              <span class="tag">Senior engineers only</span>
+              <span class="tag">Fixed-scope phases</span>
+              <span class="tag">You own the code</span>
+            </div>
+          </div>
+
+          <div class="hero-card reveal">
+            <h2>Who this is for</h2>
+            <div class="fact">
+              <span class="fact-label">Budget ready</span>
+              <span class="fact-value">Resource allocation sorted, need execution</span>
+            </div>
+            <div class="fact">
+              <span class="fact-label">Technical gaps</span>
+              <span class="fact-value">Experienced founders without tech co-founder</span>
+            </div>
+            <div class="fact">
+              <span class="fact-label">Speed matters</span>
+              <span class="fact-value">Want production in weeks, not quarters</span>
+            </div>
+            <div class="fact">
+              <span class="fact-label">Quality focus</span>
+              <span class="fact-value">B2B SaaS, fintech, regulated industries</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Problem / Solution -->
+    <section class="problem">
+      <div class="container">
+        <div class="problem-grid">
+          <div class="problem-card left reveal">
+            <h3>The typical path is painful</h3>
+            <ul>
+              <li>
+                <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                Agencies overpromise and underdeliver
+              </li>
+              <li>
+                <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                Freelancers disappear mid-project
+              </li>
+              <li>
+                <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                Technical co-founders want equity, not cash
+              </li>
+              <li>
+                <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                MVPs ship broken and never get fixed
+              </li>
+            </ul>
+          </div>
+
+          <div class="problem-card right reveal">
+            <h3>How we work</h3>
+            <ul>
+              <li>
+                <span class="check-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </span>
+                Senior engineers, every week
+              </li>
+              <li>
+                <span class="check-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </span>
+                Time-boxed phases with clear scope
+              </li>
+              <li>
+                <span class="check-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </span>
+                Code ownership transfers to you
+              </li>
+              <li>
+                <span class="check-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </span>
+                Production-ready from day one
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Packages -->
+    <section class="packages" id="packages">
+      <div class="container">
+        <div class="section-header reveal">
+          <h2>How we work together</h2>
+          <p>Three engagement models. Fixed scope, transparent pricing, zero surprises.</p>
+        </div>
+
+        <div class="packages-grid">
+          <div class="package-card reveal">
+            <h3>Discovery Sprint</h3>
+            <p>Map the path from idea to first release.</p>
+            <ul class="package-list">
+              <li>User journeys & success metrics</li>
+              <li>Architecture & build plan</li>
+              <li>Prioritized backlog</li>
+              <li>Technical risk assessment</li>
+            </ul>
+          </div>
+
+          <div class="package-card reveal">
+            <h3>MVP Build</h3>
+            <p>Ship a production-ready first version.</p>
+            <ul class="package-list">
+              <li>Full-stack web app + API</li>
+              <li>Auth, billing, analytics</li>
+              <li>Automated testing</li>
+              <li>Monitoring & documentation</li>
+            </ul>
+          </div>
+
+          <div class="package-card reveal">
+            <h3>Growth Support</h3>
+            <p>Ongoing engineering as your product scales.</p>
+            <ul class="package-list">
+              <li>Weekly sprints</li>
+              <li>Feature development</li>
+              <li>Performance optimization</li>
+              <li>Infrastructure & DevOps</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Services -->
+    <section class="services" id="services">
+      <div class="container">
+        <div class="section-header reveal">
+          <h2>What we deliver</h2>
+          <p>Full-stack SaaS engineering. No juniors, no hand-offs, no excuses.</p>
+        </div>
+
+        <div class="services-grid">
+          <div class="service-card reveal">
+            <div class="service-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="16 18 22 12 16 6"></polyline>
+                <polyline points="8 6 2 12 8 18"></polyline>
+              </svg>
+            </div>
+            <h3>Product Engineering</h3>
+            <p>Discovery, UX design, full-stack web, APIs, automation.</p>
+          </div>
+
+          <div class="service-card reveal">
+            <div class="service-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="20" x2="18" y2="10"></line>
+                <line x1="12" y1="20" x2="12" y2="4"></line>
+                <line x1="6" y1="20" x2="6" y2="14"></line>
+              </svg>
+            </div>
+            <h3>Marketing Infrastructure</h3>
+            <p>Landing pages, SEO, analytics, CRM setup.</p>
+          </div>
+
+          <div class="service-card reveal">
+            <div class="service-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                <line x1="8" y1="21" x2="16" y2="21"></line>
+                <line x1="12" y1="17" x2="12" y2="21"></line>
+              </svg>
+            </div>
+            <h3>E-commerce Setup</h3>
+            <p>Shopify, payments, memberships, conversion optimization.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Trust -->
+    <section class="trust" id="trust">
+      <div class="container">
+        <div class="section-header reveal">
+          <h2>Why work with us</h2>
+          <p>Senior talent. Predictable delivery. No surprises.</p>
+        </div>
+
+        <div class="trust-grid">
+          <div class="trust-card reveal">
+            <div class="trust-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+            </div>
+            <h3>Time-boxed phases</h3>
+            <p>1-2 week sprints with clear outcomes</p>
+          </div>
+
+          <div class="trust-card reveal">
+            <div class="trust-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </div>
+            <h3>Full transparency</h3>
+            <p>Shared repos, docs, and metrics</p>
+          </div>
+
+          <div class="trust-card reveal">
+            <div class="trust-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              </svg>
+            </div>
+            <h3>Quality first</h3>
+            <p>Tests, reviews, and releases built-in</p>
+          </div>
+
+          <div class="trust-card reveal">
+            <div class="trust-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="1" x2="12" y2="23"></line>
+                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+              </svg>
+            </div>
+            <h3>Clear pricing</h3>
+            <p>Fixed fees or weekly rate</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- About -->
+    <section class="about" id="about">
+      <div class="container">
+        <div class="section-header reveal">
+          <h2>About</h2>
+        </div>
+
+        <div class="about-grid">
+          <div class="about-card reveal">
+            <h3>Who we are</h3>
+            <p>A senior engineering team with over a decade of experience building and shipping SaaS products. We work with funded startups, established businesses exploring new revenue streams, and founders who need a reliable technical partner rather than a vendor.</p>
+          </div>
+
+          <div class="about-card reveal">
+            <h3>How we work</h3>
+            <ul class="steps">
+              <li>
+                <span class="step-num">1</span>
+                Start with a Discovery Sprint to align on goals and scope
+              </li>
+              <li>
+                <span class="step-num">2</span>
+                Ship working software every 1-2 weeks
+              </li>
+              <li>
+                <span class="step-num">3</span>
+                Document everything and transfer ownership
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="faq" id="faq">
+      <div class="container">
+        <div class="section-header reveal">
+          <h2>Questions</h2>
+        </div>
+
+        <div class="faq-list">
+          <details class="faq-item reveal">
+            <summary>
+              <span>Can you work with funded startups and established companies?</span>
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </summary>
+            <p class="answer">Yes. We tailor engagement size and process for both. Whether you're pre-revenue with a fresh deck or an established company launching a new product line, we scale the engagement to fit your needs.</p>
+          </details>
+
+          <details class="faq-item reveal">
+            <summary>
+              <span>How do you price?</span>
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </summary>
+            <p class="answer">Time-boxed phases with fixed fees, or a weekly rate for ongoing work. You always know the next milestone and its cost before we start. No scope creep, no surprise invoices.</p>
+          </details>
+
+          <details class="faq-item reveal">
+            <summary>
+              <span>What about references or portfolio?</span>
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </summary>
+            <p class="answer">We're new as Overbyte, but not new as engineers. We're happy to share code samples, reference contacts, and case studies from previous work privately.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section class="contact" id="contact">
+      <div class="container">
+        <div class="contact-inner">
+          <h2>Ready to start?</h2>
+          <p>Fill in the form or email us directly.</p>
+          <div class="contact-email">
+            <a href="mailto:info@overbytelabs.com">info@overbytelabs.com</a>
+          </div>
+
+          <form class="contact-form reveal" id="contactForm" novalidate>
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" id="name" name="name" placeholder="Your name" required>
+                <span class="error-text">Please enter your name</span>
+              </div>
+              <div class="form-group">
+                <label for="email">Work email</label>
+                <input type="email" id="email" name="email" placeholder="you@company.com" required>
+                <span class="error-text">Please enter a valid email</span>
+              </div>
+              <div class="form-group full">
+                <label for="company">Company</label>
+                <input type="text" id="company" name="company" placeholder="Your company (optional)">
+              </div>
+              <div class="form-group full">
+                <label for="message">Tell us about your project</label>
+                <textarea id="message" name="message" rows="4" placeholder="What are you building? What's the timeline?" required></textarea>
+                <span class="error-text">Please enter a message</span>
+              </div>
+            </div>
+
+            <button type="submit" class="submit-btn">
+              <span>Send message</span>
+              <div class="spinner"></div>
+            </button>
+
+            <p class="form-message" id="formMessage"></p>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2024 Overbyte. All rights reserved.</p>
+  </footer>
+
+  <script>
+    // Mobile menu
+    const menuBtn = document.querySelector('.mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobileMenu');
+
+    menuBtn.addEventListener('click', () => {
+      mobileMenu.classList.toggle('open');
+    });
+
+    mobileMenu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.remove('open');
+      });
+    });
+
+    // Reveal on scroll
+    const revealElements = document.querySelectorAll('.reveal');
+
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    });
+
+    revealElements.forEach(el => revealObserver.observe(el));
+
+    // Form handling
+    const form = document.getElementById('contactForm');
+    const formMessage = document.getElementById('formMessage');
+    const submitBtn = form.querySelector('.submit-btn');
+    const spinner = submitBtn.querySelector('.spinner');
+    const btnText = submitBtn.querySelector('span');
+
+    function showError(input) {
+      const group = input.closest('.form-group');
+      group.classList.add('has-error');
+      input.classList.add('error');
+    }
+
+    function clearErrors() {
+      form.querySelectorAll('.form-group').forEach(g => g.classList.remove('has-error'));
+      form.querySelectorAll('input, textarea').forEach(i => i.classList.remove('error'));
+      formMessage.className = 'form-message';
+      formMessage.textContent = '';
+    }
+
+    function validateEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearErrors();
+
+      const name = form.querySelector('#name');
+      const email = form.querySelector('#email');
+      const message = form.querySelector('#message');
+
+      let valid = true;
+
+      if (!name.value.trim()) {
+        showError(name);
+        valid = false;
+      }
+
+      if (!email.value.trim() || !validateEmail(email.value)) {
+        showError(email);
+        valid = false;
+      }
+
+      if (!message.value.trim()) {
+        showError(message);
+        valid = false;
+      }
+
+      if (!valid) return;
+
+      submitBtn.disabled = true;
+      spinner.style.display = 'block';
+      btnText.textContent = 'Sending...';
+
+      try {
+        const response = await fetch('default.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: name.value,
+            email: email.value,
+            company: form.querySelector('#company').value,
+            message: message.value
+          })
+        });
+
+        const result = await response.json();
+
+        if (result.ok) {
+          formMessage.textContent = "Thank you! We'll be in touch within one business day.";
+          formMessage.className = 'form-message success';
+          form.reset();
+        } else {
+          formMessage.textContent = result.error || 'Something went wrong.';
+          formMessage.className = 'form-message error';
+        }
+      } catch (err) {
+        formMessage.textContent = 'Something went wrong. Please try again.';
+        formMessage.className = 'form-message error';
+      } finally {
+        submitBtn.disabled = false;
+        spinner.style.display = 'none';
+        btnText.textContent = 'Send message';
+      }
+    });
+
+    // Clear errors on input
+    form.querySelectorAll('input, textarea').forEach(input => {
+      input.addEventListener('input', () => {
+        input.classList.remove('error');
+        input.closest('.form-group')?.classList.remove('has-error');
+      });
+    });
+  </script>
+</body>
+</html>

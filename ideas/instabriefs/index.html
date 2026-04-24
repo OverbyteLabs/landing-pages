@@ -5,488 +5,271 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>InstaBrief — Turn Blog Posts into Newsletter Issues Instantly</title>
   <meta name="description" content="Paste a URL or RSS feed, get a ready-to-send newsletter summary in seconds. Auto-export to Mailchimp, Beehiiv, and ConvertKit.">
-
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23d946ef'/><path d='M8 10h16M8 15h12M8 20h8' stroke='white' stroke-width='2.5' stroke-linecap='round'/></svg>">
-
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23e84e0f'/><path d='M8 10h16M8 15h12M8 20h8' stroke='white' stroke-width='2.5' stroke-linecap='round'/></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #fafafa;
-      --bg-card: #ffffff;
-      --ink: #18181b;
-      --ink-2: #52525b;
-      --ink-3: #a1a1aa;
-      --border: #e4e4e7;
-      --accent: #d946ef;
-      --accent-2: #a855f7;
-      --accent-light: #fdf4ff;
-      --accent-border: #f3e8ff;
-      --green: #22c55e;
-      --green-light: #f0fdf4;
-      --amber: #f59e0b;
-      --amber-light: #fffbeb;
-      --white: #ffffff;
+      --cream:   #fffcf0;
+      --cream2:  #fef8e7;
+      --ink:     #1a1a1a;
+      --ink2:    #3d3d3d;
+      --ink3:    #717171;
+      --orange:  #e84e0f;
+      --orange2: #ff6b35;
+      --rule:    #e5dece;
+      --card:    #ffffff;
     }
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; scroll-padding-top: 72px; }
-    body { font-family: 'Plus Jakarta Sans', -apple-system, sans-serif; background: var(--bg); color: var(--ink); line-height: 1.6; -webkit-font-smoothing: antialiased; }
-    ::selection { background: #f3e8ff; }
-    .container { max-width: 1160px; width: 100%; margin: 0 auto; padding: 0 2rem; }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
+    .container{max-width:1100px;margin:0 auto;padding:0 1.5rem}
 
-    /* Header */
-    .header {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 100; height: 72px;
-      display: flex; align-items: center; background: rgba(250,250,250,0.9);
-      backdrop-filter: blur(12px); border-bottom: 1px solid var(--border);
-    }
-    .header-inner { display: flex; align-items: center; justify-content: space-between; width: 100%; }
-    .logo { display: flex; align-items: center; gap: 0.625rem; text-decoration: none; color: var(--ink); }
-    .logo-mark {
-      width: 32px; height: 32px; border-radius: 8px;
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      display: flex; align-items: center; justify-content: center;
-    }
-    .logo-mark svg { width: 18px; height: 18px; }
-    .logo-text { font-weight: 700; font-size: 1.1rem; }
-    .logo-sub { font-size: 0.72rem; color: var(--ink-3); display: block; margin-top: -2px; }
-    .nav { display: flex; align-items: center; gap: 2rem; }
-    .nav a { font-size: 0.875rem; color: var(--ink-2); text-decoration: none; transition: color 0.2s; font-weight: 500; }
-    .nav a:hover { color: var(--accent); }
-    .btn {
-      display: inline-flex; align-items: center; gap: 0.5rem;
-      padding: 0.7rem 1.4rem; border-radius: 8px;
-      font-size: 0.875rem; font-weight: 600; text-decoration: none;
-      transition: all 0.2s; cursor: pointer; border: none; font-family: inherit;
-    }
-    .btn-accent {
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      color: var(--white);
-    }
-    .btn-accent:hover { opacity: 0.9; transform: translateY(-1px); }
-    .btn-ghost { background: transparent; color: var(--ink-2); border: 1px solid var(--border); }
-    .btn-ghost:hover { background: var(--border); }
-    .mobile-menu-btn { display: none; background: none; border: none; cursor: pointer; color: var(--ink-2); }
-    .mobile-menu {
-      display: none; position: fixed; top: 72px; left: 0; right: 0; bottom: 0;
-      background: var(--white); padding: 2rem; z-index: 99; flex-direction: column; gap: 1.5rem;
-    }
-    .mobile-menu.open { display: flex; }
-    .mobile-menu a { font-size: 1.1rem; color: var(--ink); text-decoration: none; }
+    /* NAV */
+    nav{background:var(--cream);border-bottom:2px solid var(--ink);padding:1rem 0;position:sticky;top:0;z-index:100}
+    .nav-inner{display:flex;align-items:center;justify-content:space-between}
+    .logo{font-family:'Playfair Display',serif;font-weight:900;font-size:1.3rem;color:var(--ink);text-decoration:none;letter-spacing:-.02em}
+    .logo span{color:var(--orange)}
+    .nav-meta{font-size:.75rem;color:var(--ink3);letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;gap:.5rem}
+    .nav-meta::before{content:'';display:block;width:24px;height:1px;background:var(--ink3)}
+    .nav-cta{background:var(--ink);color:var(--cream);padding:.5rem 1.25rem;border-radius:4px;font-size:.82rem;font-weight:600;text-decoration:none;transition:background .2s}
+    .nav-cta:hover{background:var(--orange)}
 
-    /* Hero */
-    .hero {
-      padding-top: calc(72px + 4.5rem); padding-bottom: 4.5rem;
-      background: linear-gradient(180deg, var(--accent-light) 0%, var(--bg) 100%);
-    }
-    .hero-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
-    .eyebrow {
-      display: inline-flex; align-items: center; gap: 0.5rem;
-      padding: 0.3rem 0.75rem; border-radius: 100px;
-      background: var(--accent-border); border: 1px solid rgba(217,70,239,0.2);
-      font-size: 0.78rem; font-weight: 600; color: var(--accent);
-      text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1.25rem;
-    }
-    .hero h1 {
-      font-size: clamp(2.25rem, 4vw, 3.25rem); font-weight: 700;
-      line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 1.25rem;
-    }
-    .hero h1 em { font-style: normal; color: var(--accent); }
-    .hero-subtitle { font-size: 1.05rem; color: var(--ink-2); margin-bottom: 2rem; line-height: 1.75; }
-    .hero-cta { display: flex; gap: 0.875rem; flex-wrap: wrap; margin-bottom: 2rem; }
-    .proof { display: flex; align-items: center; gap: 0.75rem; font-size: 0.825rem; color: var(--ink-3); }
-    .proof-avatars { display: flex; }
-    .proof-avatars span {
-      width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--white);
-      margin-left: -8px; background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      display: flex; align-items: center; justify-content: center; font-size: 0.65rem; color: white; font-weight: 600;
-    }
-    .proof-avatars span:first-child { margin-left: 0; }
+    /* HERO */
+    .hero{padding:5rem 0;border-bottom:1px solid var(--rule)}
+    .hero-inner{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center}
+    @media(max-width:768px){.hero-inner{grid-template-columns:1fr;gap:3rem}}
+    .hero-eyebrow{font-size:.7rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--orange);margin-bottom:1.25rem;display:flex;align-items:center;gap:.6rem}
+    .hero-eyebrow::after{content:'';flex:1;height:1px;background:var(--orange);opacity:.4;max-width:60px}
+    h1{font-family:'Playfair Display',serif;font-size:clamp(2.6rem,5.5vw,4.5rem);font-weight:900;line-height:1.02;letter-spacing:-.02em;color:var(--ink);margin-bottom:1.25rem}
+    h1 em{color:var(--orange);font-style:italic}
+    .hero-sub{font-size:1.05rem;color:var(--ink2);max-width:480px;margin-bottom:2.5rem;line-height:1.75}
+    .form-wrap{display:flex;gap:.5rem;flex-wrap:wrap;max-width:430px}
+    input[type=email]{flex:1;min-width:180px;background:var(--card);border:2px solid var(--ink);color:var(--ink);padding:.7rem 1rem;border-radius:4px;font-family:'DM Sans',sans-serif;font-size:.88rem;outline:none;transition:border-color .2s}
+    input[type=email]::placeholder{color:var(--ink3)}
+    input[type=email]:focus{border-color:var(--orange)}
+    .btn-primary{background:var(--orange);color:#fff;border:2px solid var(--orange);padding:.7rem 1.4rem;border-radius:4px;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap}
+    .btn-primary:hover{background:var(--ink);border-color:var(--ink)}
+    .btn-primary:disabled{opacity:.5;cursor:not-allowed}
+    .form-hint{font-size:.74rem;color:var(--ink3);margin-top:.6rem}
+    #successMsg{display:none;font-size:.88rem;color:var(--orange);background:#fff7f2;border:1px solid rgba(232,78,15,.3);padding:.7rem 1rem;border-radius:4px;margin-top:.5rem;max-width:430px}
 
-    /* Newsletter card */
-    .newsletter-preview {
-      background: var(--white); border: 1px solid var(--border); border-radius: 16px;
-      overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.07);
-    }
-    .email-header {
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      padding: 1.25rem 1.5rem; color: var(--white);
-    }
-    .email-header-row { display: flex; justify-content: space-between; align-items: center; }
-    .email-header-row span { font-size: 0.78rem; opacity: 0.8; }
-    .email-subject { font-weight: 700; font-size: 1rem; margin-top: 0.25rem; }
-    .email-body { padding: 1.5rem; }
-    .email-meta { font-size: 0.78rem; color: var(--ink-3); margin-bottom: 1rem; }
-    .email-summary p { font-size: 0.9rem; color: var(--ink-2); line-height: 1.65; margin-bottom: 0.625rem; }
-    .email-summary p:last-child { margin-bottom: 0; }
-    .email-footer {
-      padding: 0.875rem 1.5rem; background: var(--bg); border-top: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: space-between;
-    }
-    .export-chips { display: flex; gap: 0.5rem; }
-    .chip {
-      padding: 0.25rem 0.625rem; border-radius: 6px; font-size: 0.75rem; font-weight: 600;
-      border: 1px solid var(--border);
-    }
-    .chip-mc { color: #1d72b8; background: #eff6ff; border-color: #bfdbfe; }
-    .chip-bh { color: #15803d; background: var(--green-light); border-color: #bbf7d0; }
-    .chip-ck { color: #b45309; background: var(--amber-light); border-color: #fde68a; }
-    .gen-time { font-size: 0.75rem; color: var(--green); font-weight: 600; }
+    /* NEWSLETTER CARD MOCKUP */
+    .mockup{background:var(--card);border:2px solid var(--ink);border-radius:8px;overflow:hidden;box-shadow:6px 6px 0 var(--ink)}
+    .mock-top{background:var(--ink);padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between}
+    .mock-from{font-size:.7rem;color:#aaa;font-family:'DM Sans',sans-serif}
+    .mock-from strong{color:#fff;display:block;font-size:.82rem;margin-bottom:.15rem}
+    .mock-badge{background:var(--orange);color:#fff;font-size:.65rem;font-weight:700;padding:.25rem .65rem;border-radius:3px;letter-spacing:.04em}
+    .mock-body{padding:1.5rem 1.25rem}
+    .mock-url{font-size:.72rem;color:var(--ink3);background:var(--cream);border:1px solid var(--rule);padding:.4rem .75rem;border-radius:3px;margin-bottom:1.25rem;display:flex;align-items:center;gap:.5rem}
+    .mock-url::before{content:'🔗';font-size:.8rem}
+    .mock-rule{height:1px;background:var(--rule);margin:1rem 0}
+    .mock-h{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;color:var(--ink);margin-bottom:.5rem;line-height:1.25}
+    .mock-p{font-size:.78rem;color:var(--ink2);line-height:1.65;margin-bottom:.75rem}
+    .mock-read{font-size:.72rem;font-weight:600;color:var(--orange);text-decoration:none;display:flex;align-items:center;gap:.35rem}
+    .mock-export{display:flex;gap:.5rem;margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--rule);flex-wrap:wrap}
+    .mock-chip{font-size:.65rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:.3rem .7rem;border-radius:3px;border:1px solid var(--rule);color:var(--ink2)}
 
-    /* How */
-    .how { padding: 5.5rem 0; background: var(--white); }
-    .section-header { text-align: center; max-width: 580px; margin: 0 auto 3.5rem; }
-    .section-header h2 { font-size: clamp(1.75rem, 3vw, 2.5rem); font-weight: 700; letter-spacing: -0.025em; margin-bottom: 0.875rem; }
-    .section-header p { color: var(--ink-2); font-size: 1.05rem; }
-    .how-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
-    .how-step { background: var(--white); padding: 2.25rem 2rem; }
-    .how-step-num {
-      width: 36px; height: 36px; border-radius: 10px;
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      color: var(--white); font-weight: 700; font-size: 0.9rem;
-      display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem;
-    }
-    .how-step h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; }
-    .how-step p { font-size: 0.875rem; color: var(--ink-2); line-height: 1.65; }
+    /* STATS */
+    .stats-bar{padding:2rem 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);margin:4rem 0;display:flex;gap:4rem;flex-wrap:wrap}
+    .stat-n{font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;color:var(--orange);line-height:1}
+    .stat-l{font-size:.75rem;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-top:.25rem}
 
-    /* Features */
-    .features { padding: 5.5rem 0; background: var(--bg); }
-    .features-split { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; }
-    .features-list { list-style: none; }
-    .feature-item {
-      display: flex; align-items: flex-start; gap: 1rem;
-      padding: 1.25rem 0; border-bottom: 1px solid var(--border);
-    }
-    .feature-item:last-child { border-bottom: none; }
-    .fi-icon {
-      width: 40px; height: 40px; background: var(--accent-light); border-radius: 10px;
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-    }
-    .fi-icon svg { width: 20px; height: 20px; stroke: var(--accent); }
-    .fi-text h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.3rem; }
-    .fi-text p { font-size: 0.875rem; color: var(--ink-2); line-height: 1.6; }
-    .subject-scorer {
-      background: var(--white); border: 1px solid var(--border);
-      border-radius: 14px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.06);
-    }
-    .scorer-head { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); }
-    .scorer-head h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.25rem; }
-    .scorer-head p { font-size: 0.8rem; color: var(--ink-3); }
-    .subject-row {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 1rem 1.5rem; border-bottom: 1px solid var(--border);
-    }
-    .subject-row:last-child { border-bottom: none; }
-    .subject-text { font-size: 0.875rem; max-width: 72%; }
-    .score-bar-wrap { display: flex; align-items: center; gap: 0.625rem; }
-    .score-bar {
-      width: 80px; height: 6px; background: var(--bg); border-radius: 3px; overflow: hidden;
-    }
-    .score-fill { height: 100%; border-radius: 3px; }
-    .score-fill.high { background: var(--green); }
-    .score-fill.mid { background: var(--amber); }
-    .score-fill.low { background: #f87171; }
-    .score-label { font-size: 0.78rem; font-weight: 700; min-width: 28px; text-align: right; }
-    .score-label.high { color: var(--green); }
-    .score-label.mid { color: var(--amber); }
-    .score-label.low { color: #f87171; }
+    /* FEATURES */
+    .features{padding:4rem 0;border-bottom:1px solid var(--rule)}
+    h2{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,3.5vw,2.8rem);font-weight:900;color:var(--ink);letter-spacing:-.02em;margin-bottom:.5rem;line-height:1.1}
+    .section-sub{color:var(--ink2);font-size:.95rem;margin-bottom:3rem;max-width:500px;line-height:1.7}
+    .feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:2.5rem}
+    .feat{border-left:3px solid var(--orange);padding-left:1.25rem}
+    .feat-n{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--ink);margin-bottom:.4rem}
+    .feat-d{font-size:.88rem;color:var(--ink2);line-height:1.7}
 
-    /* Integrations */
-    .integrations { padding: 4rem 0; background: var(--accent-light); border-top: 1px solid var(--accent-border); border-bottom: 1px solid var(--accent-border); }
-    .int-inner { text-align: center; }
-    .int-inner p { font-size: 0.875rem; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2rem; }
-    .int-logos { display: flex; align-items: center; justify-content: center; gap: 3rem; flex-wrap: wrap; }
-    .int-logo { font-size: 1rem; font-weight: 700; color: var(--ink-2); opacity: 0.7; }
+    /* PLATFORMS */
+    .platforms{padding:4rem 0;border-bottom:1px solid var(--rule)}
+    .plat-label{font-size:.7rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);margin-bottom:1.5rem}
+    .plat-row{display:flex;align-items:center;gap:2rem;flex-wrap:wrap}
+    .plat-chip{font-size:.82rem;font-weight:600;color:var(--ink2);background:var(--card);border:1px solid var(--rule);padding:.45rem 1rem;border-radius:4px}
+
+    /* QUOTE */
+    .quote-section{padding:4rem 0;border-bottom:1px solid var(--rule)}
+    .pull-quote{font-family:'Playfair Display',serif;font-size:clamp(1.3rem,2.5vw,1.9rem);font-weight:700;color:var(--ink);line-height:1.35;max-width:680px;border-left:4px solid var(--orange);padding-left:1.5rem;margin-bottom:1rem;letter-spacing:-.01em;font-style:italic}
+    .quote-attr{font-size:.8rem;color:var(--ink3);padding-left:1.5rem}
 
     /* CTA */
-    .cta-section { padding: 6rem 0; text-align: center; }
-    .cta-section h2 { font-size: clamp(1.75rem, 3vw, 2.5rem); font-weight: 700; letter-spacing: -0.025em; margin-bottom: 1rem; }
-    .cta-section p { font-size: 1.05rem; color: var(--ink-2); margin-bottom: 2.5rem; }
-    .waitlist-form { display: flex; gap: 0.75rem; max-width: 420px; margin: 0 auto; }
-    .waitlist-form input {
-      flex: 1; padding: 0.85rem 1rem; border-radius: 8px;
-      border: 1px solid var(--border); background: var(--white);
-      font-family: inherit; font-size: 0.95rem; color: var(--ink);
-    }
-    .waitlist-form input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(217,70,239,0.1); }
-    .waitlist-form input::placeholder { color: var(--ink-3); }
-    .success-msg { display: none; font-weight: 600; color: var(--accent); font-size: 1rem; }
-    .cta-note { font-size: 0.8rem; color: var(--ink-3); margin-top: 1rem; }
+    .cta{padding:6rem 0;background:var(--ink);text-align:center}
+    .cta h2{font-family:'Playfair Display',serif;color:var(--cream);font-size:clamp(2rem,4vw,3rem);font-weight:900;letter-spacing:-.025em;margin-bottom:.75rem}
+    .cta p{color:#aaa;margin-bottom:2rem;font-size:1rem}
+    .cta-form{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap}
+    .cta input[type=email]{background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.2);color:#fff;border-radius:4px;padding:.75rem 1rem;font-size:.88rem}
+    .cta input[type=email]::placeholder{color:rgba(255,255,255,.4)}
+    .cta input[type=email]:focus{border-color:var(--orange)}
+    .btn-cta{background:var(--orange);color:#fff;border:2px solid var(--orange);padding:.75rem 1.5rem;border-radius:4px;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap}
+    .btn-cta:hover{background:var(--orange2);border-color:var(--orange2)}
+    .btn-cta:disabled{opacity:.5;cursor:not-allowed}
+    #successMsg2{display:none;color:var(--orange2);font-size:.88rem;margin-top:.75rem}
 
-    footer { padding: 2rem 0; text-align: center; border-top: 1px solid var(--border); }
-    footer p { font-size: 0.875rem; color: var(--ink-3); }
-    footer a { color: var(--accent); text-decoration: none; }
-
-    .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.5s ease, transform 0.5s ease; }
-    .reveal.visible { opacity: 1; transform: translateY(0); }
-
-    @media (max-width: 1024px) {
-      .hero-inner, .features-split { grid-template-columns: 1fr; }
-      .how-steps { grid-template-columns: 1fr; }
-    }
-    @media (max-width: 768px) {
-      .nav, .header-cta { display: none; }
-      .mobile-menu-btn { display: block; }
-      .waitlist-form { flex-direction: column; }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after { animation: none !important; transition: none !important; }
-      .reveal { opacity: 1; transform: none; }
-    }
+    /* FOOTER */
+    footer{background:var(--ink);border-top:1px solid rgba(255,255,255,.08);padding:1.75rem 0}
+    .foot-inner{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+    .foot-copy{font-size:.75rem;color:rgba(255,255,255,.3)}
+    .foot-links{display:flex;gap:1.5rem}
+    .foot-links a{font-size:.78rem;color:rgba(255,255,255,.35);text-decoration:none;transition:color .2s}
+    .foot-links a:hover{color:var(--orange)}
   </style>
 </head>
 <body>
-  <header class="header">
+
+<nav>
+  <div class="container">
+    <div class="nav-inner">
+      <a href="/" class="logo">Insta<span>Brief</span></a>
+      <span class="nav-meta">Newsletter Automation</span>
+      <a href="#cta" class="nav-cta">Join waitlist</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <section class="hero">
     <div class="container">
-      <div class="header-inner">
-        <a href="/" class="logo">
-          <div class="logo-mark">
-            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round">
-              <path d="M4 4h16v2H4zM4 10h12M4 16h8"/>
-            </svg>
+      <div class="hero-inner">
+        <div>
+          <div class="hero-eyebrow">Newsletter automation</div>
+          <h1>One URL in.<br><em>Issue ready</em><br>to send.</h1>
+          <p class="hero-sub">
+            Paste any blog post, article, or RSS feed. InstaBrief writes your summary, picks the headline, and formats it for Mailchimp, Beehiiv, or ConvertKit — in seconds.
+          </p>
+          <div id="waitlistSection">
+            <form class="form-wrap" id="waitlistForm" novalidate>
+              <input type="email" id="email" placeholder="your@email.com" required autocomplete="email">
+              <button class="btn-primary" type="submit">Join the waitlist</button>
+            </form>
+            <p class="form-hint">Free during beta · No credit card needed</p>
           </div>
-          <div>
-            <span class="logo-text">InstaBrief</span>
-            <span class="logo-sub">by Overbyte</span>
+          <div id="successMsg">✓ You're on the list! We'll be in touch.</div>
+        </div>
+        <div>
+          <div class="mockup">
+            <div class="mock-top">
+              <div class="mock-from"><strong>InstaBrief</strong>your@newsletter.com</div>
+              <div class="mock-badge">READY TO SEND</div>
+            </div>
+            <div class="mock-body">
+              <div class="mock-url">techcrunch.com/2026/04/22/future-of-protein…</div>
+              <div class="mock-h">The Future of Lab-Grown Protein Has Arrived</div>
+              <div class="mock-rule"></div>
+              <div class="mock-p">
+                This week, MIT researchers announced a breakthrough in cellular agriculture that could cut production costs by 80%. Here's what it means for your diet — and your portfolio.
+              </div>
+              <a href="#" class="mock-read">Read the full article →</a>
+              <div class="mock-export">
+                <div class="mock-chip">✓ Mailchimp</div>
+                <div class="mock-chip">✓ Beehiiv</div>
+                <div class="mock-chip">✓ ConvertKit</div>
+                <div class="mock-chip">✓ Copy HTML</div>
+              </div>
+            </div>
           </div>
-        </a>
-        <nav class="nav">
-          <a href="#how">How it works</a>
-          <a href="#features">Features</a>
-          <a href="#cta">Try it free</a>
-        </nav>
-        <a href="#cta" class="btn btn-accent header-cta">Start summarising</a>
-        <button class="mobile-menu-btn" aria-label="Menu">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
-          </svg>
-        </button>
+        </div>
       </div>
     </div>
-  </header>
+  </section>
 
-  <div class="mobile-menu" id="mobileMenu">
-    <a href="#how">How it works</a>
-    <a href="#features">Features</a>
-    <a href="#cta">Try it free</a>
+  <div class="container">
+    <div class="stats-bar">
+      <div><div class="stat-n">1,800+</div><div class="stat-l">Newsletter writers</div></div>
+      <div><div class="stat-n">8 sec</div><div class="stat-l">Average summary time</div></div>
+      <div><div class="stat-n">4×</div><div class="stat-l">Faster issue creation</div></div>
+      <div><div class="stat-n">3 platforms</div><div class="stat-l">Direct export</div></div>
+    </div>
+
+    <section class="features">
+      <h2>Write less.<br>Publish more.</h2>
+      <p class="section-sub">InstaBrief handles the summarisation, formatting, and exporting. You just review and hit send.</p>
+      <div class="feat-grid">
+        <div class="feat">
+          <div class="feat-n">Smart summarisation</div>
+          <div class="feat-d">AI reads the full article, identifies the key insight, and writes a concise, engaging summary in your newsletter's voice. Not a boring excerpt.</div>
+        </div>
+        <div class="feat">
+          <div class="feat-n">One-click platform export</div>
+          <div class="feat-d">Formatted drafts land directly in your Mailchimp, Beehiiv, or ConvertKit account. No copy-pasting, no reformatting.</div>
+        </div>
+        <div class="feat">
+          <div class="feat-n">RSS batch processing</div>
+          <div class="feat-d">Feed a blog's RSS URL and get an entire week of newsletter issues generated at once. Schedule them and you're done for the week.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="platforms">
+      <div class="plat-label">Exports directly to</div>
+      <div class="plat-row">
+        <div class="plat-chip">Mailchimp</div>
+        <div class="plat-chip">Beehiiv</div>
+        <div class="plat-chip">ConvertKit</div>
+        <div class="plat-chip">Substack (copy)</div>
+        <div class="plat-chip">HTML download</div>
+      </div>
+    </section>
+
+    <section class="quote-section">
+      <blockquote class="pull-quote">
+        "I used to spend two hours on every issue. Now I spend fifteen minutes reviewing what InstaBrief drafts. It's not even close."
+      </blockquote>
+      <div class="quote-attr">— Beta tester, 22,000-subscriber tech newsletter</div>
+    </section>
   </div>
 
-  <main>
-    <section class="hero">
-      <div class="container">
-        <div class="hero-inner">
-          <div>
-            <div class="eyebrow">Newsletter automation</div>
-            <h1>Your blog posts, <em>newsletter-ready</em> in seconds.</h1>
-            <p class="hero-subtitle">Paste a URL or connect your RSS feed. InstaBrief writes a 3-paragraph summary with a scored subject line — ready to send from Mailchimp, Beehiiv, or ConvertKit.</p>
-            <div class="hero-cta">
-              <a href="#cta" class="btn btn-accent">
-                Try it free
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-              </a>
-              <a href="#how" class="btn btn-ghost">See how it works</a>
-            </div>
-            <div class="proof">
-              <div class="proof-avatars">
-                <span>JM</span><span>KR</span><span>AP</span><span>+</span>
-              </div>
-              Early access list growing weekly
-            </div>
-          </div>
-          <div class="newsletter-preview reveal">
-            <div class="email-header">
-              <div class="email-header-row">
-                <span>📬 Weekly Digest</span>
-                <span>4 min read</span>
-              </div>
-              <div class="email-subject">Why async-first companies retain engineers longer</div>
-            </div>
-            <div class="email-body">
-              <div class="email-meta">From: your-newsletter@substack.com · Thursday edition</div>
-              <div class="email-summary">
-                <p>New research from Basecamp and GitLab finds that async-first engineering teams see 34% lower voluntary attrition than their synchronous counterparts over a 24-month window.</p>
-                <p>The key driver isn't autonomy — it's <strong>documentation culture</strong>. Engineers in async orgs report clearer decision trails and less time re-litigating past choices in meetings.</p>
-                <p>The implication for hiring: async fluency is increasingly a differentiator candidates screen for, not just founders.</p>
-              </div>
-            </div>
-            <div class="email-footer">
-              <div class="export-chips">
-                <span class="chip chip-mc">Mailchimp</span>
-                <span class="chip chip-bh">Beehiiv</span>
-                <span class="chip chip-ck">ConvertKit</span>
-              </div>
-              <span class="gen-time">⚡ Generated in 4.2s</span>
-            </div>
-          </div>
-        </div>
+  <section class="cta" id="cta">
+    <div class="container">
+      <h2>Join 1,800 newsletter writers<br>saving hours every week.</h2>
+      <p>Free during beta. No credit card required.</p>
+      <div id="waitlistSection2">
+        <form class="cta-form" id="waitlistForm2" novalidate>
+          <input type="email" id="email2" placeholder="your@email.com" required>
+          <button class="btn-cta" type="submit">Join the waitlist</button>
+        </form>
       </div>
-    </section>
+      <div id="successMsg2">✓ You're on the list! We'll be in touch.</div>
+    </div>
+  </section>
+</main>
 
-    <section class="how" id="how">
-      <div class="container">
-        <div class="section-header reveal">
-          <h2>From post to send in three steps</h2>
-          <p>No copy-pasting into prompts. No manual editing. Just the output you'd write yourself.</p>
-        </div>
-        <div class="how-steps">
-          <div class="how-step reveal">
-            <div class="how-step-num">1</div>
-            <h3>Paste a URL or connect RSS</h3>
-            <p>Drop in any blog URL or link your RSS feed for automatic weekly batch mode. Supports any public web page.</p>
-          </div>
-          <div class="how-step reveal">
-            <div class="how-step-num">2</div>
-            <h3>Pick your tone and length</h3>
-            <p>Choose casual, professional, or punchy. Short summary or long-form. InstaBrief writes it to match your newsletter's voice.</p>
-          </div>
-          <div class="how-step reveal">
-            <div class="how-step-num">3</div>
-            <h3>Export and send</h3>
-            <p>One click pushes the issue to your ESP. Or download HTML to paste anywhere. Done.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="features" id="features">
-      <div class="container">
-        <div class="section-header reveal">
-          <h2>Everything your newsletter workflow needs</h2>
-        </div>
-        <div class="features-split">
-          <ul class="features-list">
-            <li class="feature-item reveal">
-              <div class="fi-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
-              <div class="fi-text">
-                <h4>RSS feed importer</h4>
-                <p>Connect once and InstaBrief automatically queues new posts each week. Zero manual input.</p>
-              </div>
-            </li>
-            <li class="feature-item reveal">
-              <div class="fi-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
-              <div class="fi-text">
-                <h4>GPT-4o summaries</h4>
-                <p>3-paragraph structured summaries with an intro hook, key insight, and takeaway. Editable before export.</p>
-              </div>
-            </li>
-            <li class="feature-item reveal">
-              <div class="fi-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
-              <div class="fi-text">
-                <h4>Subject line scorer</h4>
-                <p>Every summary ships with 3 subject line options, each scored for predicted open rate.</p>
-              </div>
-            </li>
-            <li class="feature-item reveal">
-              <div class="fi-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
-              <div class="fi-text">
-                <h4>Batch mode</h4>
-                <p>Summarise a full week of posts in one run. Curate the best and publish in minutes.</p>
-              </div>
-            </li>
-          </ul>
-          <div class="reveal">
-            <div class="subject-scorer">
-              <div class="scorer-head">
-                <h4>Subject line scorer</h4>
-                <p>Predicted open-rate ranking for this post</p>
-              </div>
-              <div class="subject-row">
-                <span class="subject-text">Why async teams retain engineers 34% longer</span>
-                <div class="score-bar-wrap">
-                  <div class="score-bar"><div class="score-fill high" style="width:82%"></div></div>
-                  <span class="score-label high">82</span>
-                </div>
-              </div>
-              <div class="subject-row">
-                <span class="subject-text">The async-first hiring signal you're ignoring</span>
-                <div class="score-bar-wrap">
-                  <div class="score-bar"><div class="score-fill mid" style="width:67%"></div></div>
-                  <span class="score-label mid">67</span>
-                </div>
-              </div>
-              <div class="subject-row">
-                <span class="subject-text">New research: documentation culture reduces attrition</span>
-                <div class="score-bar-wrap">
-                  <div class="score-bar"><div class="score-fill low" style="width:41%"></div></div>
-                  <span class="score-label low">41</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <div class="integrations">
-      <div class="container">
-        <div class="int-inner">
-          <p>Works with your existing newsletter stack</p>
-          <div class="int-logos">
-            <span class="int-logo">Mailchimp</span>
-            <span class="int-logo">Beehiiv</span>
-            <span class="int-logo">ConvertKit</span>
-            <span class="int-logo">Substack</span>
-            <span class="int-logo">Ghost</span>
-          </div>
-        </div>
+<footer>
+  <div class="container">
+    <div class="foot-inner">
+      <span class="foot-copy">© 2026 InstaBrief · Overbytelabs</span>
+      <div class="foot-links">
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="mailto:info@overbytelabs.com">Contact</a>
       </div>
     </div>
+  </div>
+</footer>
 
-    <section class="cta-section" id="cta">
-      <div class="container">
-        <h2>Write less. Publish more.</h2>
-        <p>Join the early access list and be first to try InstaBrief when we launch.</p>
-        <form class="waitlist-form" id="waitlistForm" novalidate>
-          <input type="email" placeholder="your@email.com" required autocomplete="email">
-          <button type="submit" class="btn btn-accent">Join waitlist</button>
-        </form>
-        <p class="success-msg" id="successMsg">You're on the list — we'll be in touch soon!</p>
-        <p class="cta-note">No spam. Unsubscribe anytime.</p>
-      </div>
-    </section>
-  </main>
-
-  <footer>
-    <p>© 2025 InstaBrief · Built by <a href="https://overbytelabs.com" target="_blank" rel="noopener">Overbyte</a></p>
-  </footer>
-
-  <script>
-    const menuBtn = document.querySelector('.mobile-menu-btn');
-    const mobileMenu = document.getElementById('mobileMenu');
-    menuBtn.addEventListener('click', () => mobileMenu.classList.toggle('open'));
-    mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => mobileMenu.classList.remove('open')));
-    const obs = new IntersectionObserver(e => e.forEach(x => { if (x.isIntersecting) { x.target.classList.add('visible'); obs.unobserve(x.target); } }), { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
-    document.getElementById('waitlistForm').addEventListener('submit', async function(e) {
+<script>
+  function wire(fid, eid, sid, mid) {
+    document.getElementById(fid).addEventListener('submit', async function(e) {
       e.preventDefault();
-      const email = this.querySelector('input').value.trim();
+      const email = document.getElementById(eid).value.trim();
       if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return;
       const btn = this.querySelector('button');
-      btn.disabled = true;
-      btn.textContent = 'Sending\u2026';
+      btn.disabled = true; btn.textContent = 'Sending…';
       try {
-        const res = await fetch('default.php', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email })
-        });
-        const data = await res.json();
-        if (data.ok) {
-          this.style.display = 'none';
-          document.getElementById('successMsg').style.display = 'block';
-        } else {
-          btn.disabled = false;
-          btn.textContent = 'Try again';
-          alert(data.error || 'Something went wrong. Please try again.');
-        }
-      } catch (_) {
-        btn.disabled = false;
-        btn.textContent = 'Try again';
-        alert('Network error. Please try again.');
-      }
+        const r = await fetch('default.php', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});
+        const d = await r.json();
+        if (d.ok) {
+          document.getElementById(sid).style.display = 'none';
+          document.getElementById(mid).style.display = 'block';
+        } else { btn.disabled = false; btn.textContent = 'Try again'; alert(d.error || 'Something went wrong.'); }
+      } catch(_) { btn.disabled = false; btn.textContent = 'Try again'; alert('Network error. Please try again.'); }
     });
-  </script>
+  }
+  wire('waitlistForm','email','waitlistSection','successMsg');
+  wire('waitlistForm2','email2','waitlistSection2','successMsg2');
+</script>
 </body>
 </html>
