@@ -1,0 +1,470 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PodTime — Auto-Timestamps & Show Notes for Podcasters</title>
+  <meta name="description" content="Upload your audio or paste a feed URL. Get AI-generated chapter titles, timestamps, SEO show notes, and YouTube chapter exports in minutes.">
+
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%237c3aed'/><circle cx='16' cy='16' r='6' fill='none' stroke='white' stroke-width='2'/><line x1='16' y1='4' x2='16' y2='28' stroke='white' stroke-width='2'/></svg>">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #0e0b1a;
+      --bg-2: #13102a;
+      --bg-3: #1a1535;
+      --bg-4: #211c42;
+      --violet: #7c3aed;
+      --violet-light: #a78bfa;
+      --violet-dim: rgba(124,58,237,0.15);
+      --amber: #f59e0b;
+      --amber-light: #fcd34d;
+      --amber-dim: rgba(245,158,11,0.12);
+      --slate-200: #e2e8f0;
+      --slate-400: #94a3b8;
+      --slate-500: #64748b;
+      --slate-600: #475569;
+      --white: #ffffff;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+    body { font-family: 'Plus Jakarta Sans', -apple-system, sans-serif; background: var(--bg); color: var(--slate-200); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+    ::selection { background: var(--violet-dim); }
+    .container { max-width: 1160px; width: 100%; margin: 0 auto; padding: 0 2rem; }
+
+    /* Header */
+    .header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100; height: 72px;
+      background: rgba(14,11,26,0.92); backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center;
+    }
+    .header-inner { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+    .logo { display: flex; align-items: center; gap: 0.625rem; text-decoration: none; color: var(--white); }
+    .logo-mark {
+      width: 32px; height: 32px; background: var(--violet); border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .logo-text { font-weight: 700; font-size: 1.1rem; }
+    .logo-sub { font-size: 0.72rem; color: var(--slate-500); display: block; margin-top: -2px; }
+    .nav { display: flex; align-items: center; gap: 2rem; }
+    .nav a { font-size: 0.875rem; color: var(--slate-400); text-decoration: none; transition: color 0.2s; font-weight: 500; }
+    .nav a:hover { color: var(--violet-light); }
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.7rem 1.4rem; border-radius: 8px;
+      font-size: 0.875rem; font-weight: 600; text-decoration: none;
+      transition: all 0.2s; cursor: pointer; border: none; font-family: inherit;
+    }
+    .btn-violet { background: var(--violet); color: var(--white); }
+    .btn-violet:hover { filter: brightness(1.15); transform: translateY(-1px); }
+    .btn-amber { background: var(--amber); color: #1c1404; }
+    .btn-amber:hover { filter: brightness(1.1); transform: translateY(-1px); }
+    .btn-ghost { background: transparent; color: var(--slate-400); border: 1px solid rgba(255,255,255,0.1); }
+    .btn-ghost:hover { color: var(--white); border-color: rgba(255,255,255,0.25); }
+    .mobile-menu-btn { display: none; background: none; border: none; cursor: pointer; color: var(--slate-400); }
+    .mobile-menu {
+      display: none; position: fixed; top: 72px; left: 0; right: 0; bottom: 0;
+      background: var(--bg); padding: 2rem; z-index: 99; flex-direction: column; gap: 1.5rem;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a { font-size: 1.1rem; color: var(--slate-400); text-decoration: none; }
+
+    /* Hero */
+    .hero {
+      padding-top: calc(72px + 5rem); padding-bottom: 4rem;
+      background: radial-gradient(ellipse 90% 50% at 50% 0%, rgba(124,58,237,0.18) 0%, transparent 65%);
+    }
+    .hero-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 3.5rem; align-items: center; }
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.3rem 0.75rem; border-radius: 100px;
+      background: var(--violet-dim); border: 1px solid rgba(124,58,237,0.3);
+      font-size: 0.78rem; font-weight: 600; color: var(--violet-light);
+      text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1.25rem;
+    }
+    .hero h1 {
+      font-size: clamp(2.25rem, 4vw, 3.25rem); font-weight: 700;
+      line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 1.25rem; color: var(--white);
+    }
+    .hero h1 em { font-style: normal; color: var(--amber-light); }
+    .hero-subtitle { font-size: 1.05rem; color: var(--slate-400); margin-bottom: 2rem; line-height: 1.75; }
+    .hero-cta { display: flex; gap: 0.875rem; flex-wrap: wrap; margin-bottom: 1.75rem; }
+    .hero-note { font-size: 0.825rem; color: var(--slate-600); }
+
+    /* Waveform player */
+    .player-card {
+      background: var(--bg-3); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px; overflow: hidden; box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+    }
+    .player-head {
+      padding: 1.25rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.06);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .player-title { font-weight: 600; font-size: 0.9rem; color: var(--white); }
+    .player-meta { font-size: 0.78rem; color: var(--slate-500); }
+    .waveform { padding: 1.25rem 1.5rem; display: flex; align-items: center; gap: 2px; height: 72px; }
+    .waveform span {
+      display: inline-block; width: 3px; border-radius: 2px;
+      background: var(--slate-600); transition: background 0.2s; flex-shrink: 0;
+    }
+    .waveform span.played { background: var(--violet-light); }
+    .waveform span.current { background: var(--amber-light); }
+    .player-controls {
+      padding: 0 1.5rem 1.25rem; display: flex; align-items: center; justify-content: space-between;
+    }
+    .play-btn {
+      width: 40px; height: 40px; border-radius: 50%; background: var(--violet);
+      display: flex; align-items: center; justify-content: center; cursor: pointer; border: none;
+    }
+    .play-btn svg { width: 16px; height: 16px; margin-left: 2px; }
+    .time-label { font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; color: var(--slate-400); }
+    .chapters { border-top: 1px solid rgba(255,255,255,0.06); }
+    .chapter-row {
+      display: flex; align-items: center; gap: 1rem; padding: 0.875rem 1.5rem;
+      border-bottom: 1px solid rgba(255,255,255,0.04); cursor: pointer; transition: background 0.15s;
+    }
+    .chapter-row:last-child { border-bottom: none; }
+    .chapter-row:hover { background: rgba(255,255,255,0.03); }
+    .chapter-row.active { background: var(--violet-dim); }
+    .chapter-ts { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--amber-light); min-width: 44px; }
+    .chapter-title { font-size: 0.875rem; color: var(--slate-200); flex: 1; }
+    .chapter-row.active .chapter-title { color: var(--violet-light); }
+
+    /* Stats */
+    .stats { background: var(--bg-2); border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05); padding: 3rem 0; }
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; text-align: center; }
+    .stat-num { font-size: 2rem; font-weight: 700; color: var(--white); letter-spacing: -0.03em; }
+    .stat-num em { font-style: normal; color: var(--amber-light); }
+    .stat-label { font-size: 0.85rem; color: var(--slate-500); margin-top: 0.25rem; }
+
+    /* Exports */
+    .exports { padding: 5.5rem 0; background: var(--bg); }
+    .section-header { text-align: center; max-width: 580px; margin: 0 auto 3.5rem; }
+    .section-header h2 { font-size: clamp(1.75rem, 3vw, 2.5rem); font-weight: 700; color: var(--white); letter-spacing: -0.025em; margin-bottom: 0.875rem; }
+    .section-header p { color: var(--slate-400); font-size: 1.05rem; }
+    .export-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+    .export-card {
+      background: var(--bg-3); border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 12px; padding: 1.75rem; transition: border-color 0.25s;
+    }
+    .export-card:hover { border-color: rgba(124,58,237,0.4); }
+    .export-format {
+      display: inline-block; padding: 0.25rem 0.6rem; border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; font-weight: 600;
+      background: var(--violet-dim); color: var(--violet-light); margin-bottom: 1rem;
+    }
+    .export-card h3 { font-size: 0.975rem; font-weight: 600; color: var(--white); margin-bottom: 0.5rem; }
+    .export-card p { font-size: 0.875rem; color: var(--slate-400); line-height: 1.65; }
+
+    /* Features */
+    .features { padding: 5.5rem 0; background: var(--bg-2); }
+    .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+    .feature-card {
+      background: var(--bg-4); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 1.75rem;
+    }
+    .feature-icon {
+      width: 40px; height: 40px; background: var(--violet-dim); border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem;
+    }
+    .feature-icon svg { width: 20px; height: 20px; stroke: var(--violet-light); }
+    .feature-card h3 { font-size: 0.975rem; font-weight: 600; color: var(--white); margin-bottom: 0.5rem; }
+    .feature-card p { font-size: 0.875rem; color: var(--slate-400); line-height: 1.65; }
+
+    /* Pricing */
+    .pricing { padding: 5.5rem 0; background: var(--bg); }
+    .pricing-note { text-align: center; font-size: 0.95rem; color: var(--slate-400); margin-top: 1.5rem; }
+    .pricing-row { display: flex; justify-content: center; gap: 1rem; margin-top: 2.5rem; flex-wrap: wrap; }
+    .pricing-chip {
+      display: flex; align-items: center; gap: 0.625rem; padding: 0.75rem 1.25rem;
+      background: var(--bg-3); border: 1px solid rgba(255,255,255,0.07); border-radius: 10px;
+      font-size: 0.9rem;
+    }
+    .chip-price { font-weight: 700; color: var(--amber-light); }
+
+    /* CTA */
+    .cta-section {
+      padding: 6rem 0; text-align: center;
+      background: radial-gradient(ellipse 60% 60% at 50% 100%, rgba(124,58,237,0.15) 0%, transparent 70%);
+    }
+    .cta-section h2 { font-size: clamp(1.75rem, 3vw, 2.5rem); font-weight: 700; color: var(--white); letter-spacing: -0.025em; margin-bottom: 1rem; }
+    .cta-section p { color: var(--slate-400); margin-bottom: 2.5rem; font-size: 1.05rem; }
+    .waitlist-form { display: flex; gap: 0.75rem; max-width: 420px; margin: 0 auto; }
+    .waitlist-form input {
+      flex: 1; padding: 0.85rem 1rem; border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.12); background: var(--bg-3);
+      color: var(--white); font-family: inherit; font-size: 0.95rem;
+    }
+    .waitlist-form input:focus { outline: none; border-color: var(--violet-light); }
+    .waitlist-form input::placeholder { color: var(--slate-500); }
+    .success-msg { display: none; color: var(--amber-light); font-weight: 600; font-size: 1rem; }
+    .cta-note { font-size: 0.8rem; color: var(--slate-600); margin-top: 1rem; }
+
+    footer { padding: 2rem 0; text-align: center; border-top: 1px solid rgba(255,255,255,0.06); }
+    footer p { font-size: 0.875rem; color: var(--slate-500); }
+    footer a { color: var(--violet-light); text-decoration: none; }
+
+    .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.5s ease, transform 0.5s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 1024px) {
+      .hero-inner { grid-template-columns: 1fr; }
+      .features-grid { grid-template-columns: repeat(2, 1fr); }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .nav, .header-cta { display: none; }
+      .mobile-menu-btn { display: block; }
+      .export-grid, .features-grid { grid-template-columns: 1fr; }
+      .waitlist-form { flex-direction: column; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+      .reveal { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <div class="header-inner">
+        <a href="/" class="logo">
+          <div class="logo-mark">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round">
+              <circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+            </svg>
+          </div>
+          <div>
+            <span class="logo-text">PodTime</span>
+            <span class="logo-sub">by Overbyte</span>
+          </div>
+        </a>
+        <nav class="nav">
+          <a href="#exports">Exports</a>
+          <a href="#features">Features</a>
+          <a href="#cta">Try free</a>
+        </nav>
+        <a href="#cta" class="btn btn-amber header-cta">Get started</a>
+        <button class="mobile-menu-btn" aria-label="Menu">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#exports">Exports</a>
+    <a href="#features">Features</a>
+    <a href="#cta">Try free</a>
+  </div>
+
+  <main>
+    <section class="hero">
+      <div class="container">
+        <div class="hero-inner">
+          <div>
+            <div class="eyebrow">Podcast production tool</div>
+            <h1>Timestamps and show notes, <em>done automatically.</em></h1>
+            <p class="hero-subtitle">Upload your audio or paste a feed URL. PodTime transcribes with AssemblyAI, generates chapter titles, SEO show notes, and exports in every format your distribution needs.</p>
+            <div class="hero-cta">
+              <a href="#cta" class="btn btn-amber">
+                Try free — first episode on us
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </a>
+              <a href="#exports" class="btn btn-ghost">See export formats</a>
+            </div>
+            <p class="hero-note">Pay-per-episode · No subscription required</p>
+          </div>
+          <div class="player-card reveal">
+            <div class="player-head">
+              <div>
+                <div class="player-title">Ep. 87 — The Future of Async Work</div>
+                <div class="player-meta">58:24 total · 7 chapters detected</div>
+              </div>
+            </div>
+            <div class="waveform" id="waveform" aria-label="audio waveform">
+              <!-- Generated by JS -->
+            </div>
+            <div class="player-controls">
+              <button class="play-btn" aria-label="Play">
+                <svg viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>
+              </button>
+              <span class="time-label">14:33 / 58:24</span>
+            </div>
+            <div class="chapters">
+              <div class="chapter-row">
+                <span class="chapter-ts">00:00</span>
+                <span class="chapter-title">Intro & guest background</span>
+              </div>
+              <div class="chapter-row active">
+                <span class="chapter-ts">14:22</span>
+                <span class="chapter-title">Why async-first companies outperform</span>
+              </div>
+              <div class="chapter-row">
+                <span class="chapter-ts">28:11</span>
+                <span class="chapter-title">Documentation as a leadership skill</span>
+              </div>
+              <div class="chapter-row">
+                <span class="chapter-ts">41:05</span>
+                <span class="chapter-title">Hiring for async fluency</span>
+              </div>
+              <div class="chapter-row">
+                <span class="chapter-ts">51:40</span>
+                <span class="chapter-title">Tools that actually help</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="stats">
+      <div class="container">
+        <div class="stats-grid">
+          <div class="reveal"><div class="stat-num"><em>~3</em> min</div><div class="stat-label">to process a 60-min episode</div></div>
+          <div class="reveal"><div class="stat-num">99%</div><div class="stat-label">transcription accuracy (AssemblyAI)</div></div>
+          <div class="reveal"><div class="stat-num">4</div><div class="stat-label">export formats per episode</div></div>
+          <div class="reveal"><div class="stat-num">Pay-per</div><div class="stat-label">episode — no subscription</div></div>
+        </div>
+      </div>
+    </div>
+
+    <section class="exports" id="exports">
+      <div class="container">
+        <div class="section-header reveal">
+          <h2>Every format your workflow needs</h2>
+          <p>One upload, four ready-to-use output formats.</p>
+        </div>
+        <div class="export-grid">
+          <div class="export-card reveal">
+            <span class="export-format">.md</span>
+            <h3>Markdown show notes</h3>
+            <p>Clean structured notes with chapter headers, timestamps, links, and guest bio — ready to paste into your CMS or podcast host.</p>
+          </div>
+          <div class="export-card reveal">
+            <span class="export-format">.html</span>
+            <h3>Formatted HTML</h3>
+            <p>Drop directly into Wordpress, Ghost, or Webflow. SEO-optimised headings and schema-ready structure included.</p>
+          </div>
+          <div class="export-card reveal">
+            <span class="export-format">.srt</span>
+            <h3>SRT captions</h3>
+            <p>Accurate subtitle files for YouTube, Spotify, or your video editor. Time-coded per sentence.</p>
+          </div>
+          <div class="export-card reveal">
+            <span class="export-format">YouTube</span>
+            <h3>YouTube chapters</h3>
+            <p>Copy-paste into your video description. Formatted exactly as YouTube expects: <code>00:00 Intro</code> per line.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="features" id="features">
+      <div class="container">
+        <div class="section-header reveal">
+          <h2>Built for independent creators</h2>
+        </div>
+        <div class="features-grid">
+          <div class="feature-card reveal">
+            <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+            <h3>AssemblyAI transcription</h3>
+            <p>Industry-leading accuracy with speaker diarisation. Identifies who said what, even in multi-guest episodes.</p>
+          </div>
+          <div class="feature-card reveal">
+            <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></div>
+            <h3>Smart chapter detection</h3>
+            <p>AI identifies natural topic transitions and names them. Review and reorder chapters before export.</p>
+          </div>
+          <div class="feature-card reveal">
+            <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div>
+            <h3>SEO-optimised description</h3>
+            <p>Generates a 200-word meta description targeting long-tail keywords from your episode content.</p>
+          </div>
+          <div class="feature-card reveal">
+            <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg></div>
+            <h3>Feed URL importer</h3>
+            <p>Paste your RSS feed to process back-catalogue episodes in bulk. Great for launching a new show or migrating hosts.</p>
+          </div>
+          <div class="feature-card reveal">
+            <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+            <h3>Web editor</h3>
+            <p>Edit chapter titles, adjust timestamps, and tweak show notes in-browser before downloading or publishing.</p>
+          </div>
+          <div class="feature-card reveal">
+            <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+            <h3>Audio never stored</h3>
+            <p>Your file is processed and immediately deleted. Transcripts are retained only as long as you need them.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="pricing">
+      <div class="container">
+        <div class="section-header reveal">
+          <h2>Simple pay-per-episode pricing</h2>
+          <p>No subscription. Process exactly what you need, when you need it.</p>
+        </div>
+        <div class="pricing-row">
+          <div class="pricing-chip reveal"><span class="chip-price">Free</span> first episode — try it risk-free</div>
+          <div class="pricing-chip reveal"><span class="chip-price">$1.50</span> per episode up to 30 min</div>
+          <div class="pricing-chip reveal"><span class="chip-price">$2.50</span> per episode up to 90 min</div>
+          <div class="pricing-chip reveal"><span class="chip-price">Custom</span> media company &amp; agency plans</div>
+        </div>
+        <p class="pricing-note reveal">Credits never expire. Buy when you need them.</p>
+      </div>
+    </section>
+
+    <section class="cta-section" id="cta">
+      <div class="container">
+        <h2>Turn your next episode into polished show notes.</h2>
+        <p>Join the early access list and get your first episode processed free.</p>
+        <form class="waitlist-form" id="waitlistForm" novalidate>
+          <input type="email" placeholder="your@email.com" required autocomplete="email">
+          <button type="submit" class="btn btn-amber">Get early access</button>
+        </form>
+        <p class="success-msg" id="successMsg">You're in — we'll reach out when PodTime launches.</p>
+        <p class="cta-note">No spam. Unsubscribe anytime.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 PodTime · Built by <a href="https://overbytelabs.com" target="_blank" rel="noopener">Overbyte</a></p>
+  </footer>
+
+  <script>
+    // Waveform
+    const wf = document.getElementById('waveform');
+    const heights = [12,20,28,18,35,40,32,45,38,55,60,48,70,62,68,72,58,64,70,65,50,44,38,48,52,44,36,28,40,46,38,34,28,22,18,24,30,26,20,18,28,34,42,50,44,38,32,26,22,18,24,30,28,22,18,24];
+    const played = Math.floor(heights.length * 0.25);
+    heights.forEach((h, i) => {
+      const s = document.createElement('span');
+      s.style.height = h + 'px';
+      if (i < played) s.classList.add('played');
+      if (i === played) s.classList.add('current');
+      wf.appendChild(s);
+    });
+
+    const menuBtn = document.querySelector('.mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    menuBtn.addEventListener('click', () => mobileMenu.classList.toggle('open'));
+    mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => mobileMenu.classList.remove('open')));
+    const obs = new IntersectionObserver(e => e.forEach(x => { if (x.isIntersecting) { x.target.classList.add('visible'); obs.unobserve(x.target); } }), { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+    document.getElementById('waitlistForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const email = this.querySelector('input').value.trim();
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return;
+      this.style.display = 'none';
+      document.getElementById('successMsg').style.display = 'block';
+    });
+  </script>
+</body>
+</html>
