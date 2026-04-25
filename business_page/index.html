@@ -679,6 +679,102 @@
       flex-shrink: 0;
     }
 
+    /* Products */
+    .products {
+      background: var(--sand-50);
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
+    .product-card {
+      background: var(--white);
+      border: 1px solid var(--sand-200);
+      border-radius: 12px;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.25s ease;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .product-card:hover {
+      border-color: var(--pine-700);
+      box-shadow: 0 8px 30px rgba(31, 77, 58, 0.08);
+      transform: translateY(-2px);
+    }
+
+    .product-card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 0.875rem;
+    }
+
+    .product-name {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: var(--ink-900);
+      letter-spacing: -0.01em;
+    }
+
+    .product-tag {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.3rem 0.6rem;
+      border-radius: 5px;
+      background: var(--pine-50);
+      color: var(--pine-700);
+      white-space: nowrap;
+      margin-left: 0.75rem;
+    }
+
+    .product-desc {
+      font-size: 0.9rem;
+      color: var(--ink-900);
+      opacity: 0.7;
+      line-height: 1.65;
+      flex: 1;
+      margin-bottom: 1.25rem;
+    }
+
+    .product-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--pine-700);
+    }
+
+    .product-link svg {
+      width: 14px;
+      height: 14px;
+      transition: transform 0.2s;
+    }
+
+    .product-card:hover .product-link svg {
+      transform: translateX(3px);
+    }
+
+    @media (max-width: 1024px) {
+      .products-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .products-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
     /* FAQ */
     .faq {
       background: var(--white);
@@ -1022,6 +1118,7 @@
           <a href="#services">Services</a>
           <a href="#trust">Trust</a>
           <a href="#about">About</a>
+          <a href="#products">Products</a>
           <a href="#faq">FAQ</a>
         </nav>
 
@@ -1043,6 +1140,7 @@
     <a href="#services">Services</a>
     <a href="#trust">Trust</a>
     <a href="#about">About</a>
+    <a href="#products">Products</a>
     <a href="#faq">FAQ</a>
     <a href="#contact">Contact</a>
   </div>
@@ -1332,6 +1430,90 @@
               </li>
             </ul>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Products -->
+    <section class="products" id="products">
+      <div class="container">
+        <div class="section-header reveal">
+          <h2>Our products</h2>
+          <p>Micro-SaaS tools we're building and launching. Each is available as an early-access waitlist.</p>
+        </div>
+
+        <div class="products-grid">
+          <a href="https://therabook.overbytelabs.com" target="_blank" rel="noopener noreferrer" class="product-card reveal">
+            <div class="product-card-header">
+              <span class="product-name">TheraBook</span>
+              <span class="product-tag">Healthcare</span>
+            </div>
+            <p class="product-desc">HIPAA-compliant scheduling for independent therapists. Handles bookings, intake forms, automated reminders, and telehealth — so therapists can focus on clients, not admin.</p>
+            <span class="product-link">
+              Visit waitlist
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </span>
+          </a>
+
+          <a href="https://promptclean.overbytelabs.com" target="_blank" rel="noopener noreferrer" class="product-card reveal">
+            <div class="product-card-header">
+              <span class="product-name">PromptClean</span>
+              <span class="product-tag">Security</span>
+            </div>
+            <p class="product-desc">Chrome extension that redacts PII from your text before it reaches AI tools like ChatGPT or Claude. Names, emails, phone numbers — replaced with safe tokens before the prompt leaves your browser.</p>
+            <span class="product-link">
+              Visit waitlist
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </span>
+          </a>
+
+          <a href="https://instabriefs.overbytelabs.com" target="_blank" rel="noopener noreferrer" class="product-card reveal">
+            <div class="product-card-header">
+              <span class="product-name">InstaBrief</span>
+              <span class="product-tag">Newsletter</span>
+            </div>
+            <p class="product-desc">Paste any blog URL or RSS feed and get a formatted, ready-to-send newsletter issue in seconds. Exports directly to Mailchimp, Beehiiv, and ConvertKit.</p>
+            <span class="product-link">
+              Visit waitlist
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </span>
+          </a>
+
+          <a href="https://podtime.overbytelabs.com" target="_blank" rel="noopener noreferrer" class="product-card reveal">
+            <div class="product-card-header">
+              <span class="product-name">PodTime</span>
+              <span class="product-tag">Podcasting</span>
+            </div>
+            <p class="product-desc">Upload your episode audio and get AI-generated chapter titles, timestamps, SEO show notes, and YouTube chapter exports in minutes — not hours.</p>
+            <span class="product-link">
+              Visit waitlist
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </span>
+          </a>
+
+          <a href="https://quickclause.overbytelabs.com" target="_blank" rel="noopener noreferrer" class="product-card reveal">
+            <div class="product-card-header">
+              <span class="product-name">QuickClause</span>
+              <span class="product-tag">Legal</span>
+            </div>
+            <p class="product-desc">Paste any contract and get AI-flagged clauses with plain-English risk explanations in under 60 seconds. Know exactly what to push back on before you sign.</p>
+            <span class="product-link">
+              Visit waitlist
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </span>
+          </a>
+
+          <a href="https://studystreak.overbytelabs.com" target="_blank" rel="noopener noreferrer" class="product-card reveal">
+            <div class="product-card-header">
+              <span class="product-name">StudyStreak</span>
+              <span class="product-tag">EdTech</span>
+            </div>
+            <p class="product-desc">Daily learning habit tracker with streak heatmaps and an AI Socratic coach that asks questions instead of giving answers — building real retention, not passive review.</p>
+            <span class="product-link">
+              Visit waitlist
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </span>
+          </a>
         </div>
       </div>
     </section>
