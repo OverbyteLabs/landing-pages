@@ -1,0 +1,157 @@
+name: Unit Tests
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'business_page/**'
+      - 'ideas/**'
+      - '.github/workflows/test.yml'
+  pull_request:
+    branches: [master]
+
+jobs:
+  unit-tests:
+    name: Unit tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # ── PHP lint ─────────────────────────────────────────────────────────────
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: none
+
+      - name: PHP syntax check
+        run: |
+          echo "=== PHP lint ==="
+          find business_page -name '*.php' | while read f; do
+            echo "  Checking $f"
+            php -l "$f" || exit 1
+          done
+          echo "PHP lint passed."
+
+      - name: PHP contact-form logic test
+        run: |
+          php -r "
+          // ── Simulate validation logic from default.php ──────────────────
+          function validate(\$data) {
+            \$errors = [];
+            \$name    = trim(\$data['name']    ?? '');
+            \$email   = trim(\$data['email']   ?? '');
+            \$message = trim(\$data['message'] ?? '');
+
+            if (empty(\$name))    \$errors[] = 'Name is required';
+            if (empty(\$email))   \$errors[] = 'Email is required';
+            elseif (!filter_var(\$email, FILTER_VALIDATE_EMAIL))
+              \$errors[] = 'Invalid email format';
+            if (empty(\$message)) \$errors[] = 'Message is required';
+            return \$errors;
+          }
+
+          \$pass = 0; \$fail = 0;
+
+          // Case 1: all valid
+          \$errs = validate(['name'=>'Alice','email'=>'alice@example.com','message'=>'Hello']);
+          if (count(\$errs) === 0) { \$pass++; echo '[PASS] valid input\n'; }
+          else { \$fail++; echo '[FAIL] valid input: '.implode(', ',\$errs).'\n'; }
+
+          // Case 2: missing name
+          \$errs = validate(['name'=>'','email'=>'alice@example.com','message'=>'Hello']);
+          if (in_array('Name is required', \$errs)) { \$pass++; echo '[PASS] missing name\n'; }
+          else { \$fail++; echo '[FAIL] missing name not caught\n'; }
+
+          // Case 3: bad email
+          \$errs = validate(['name'=>'Bob','email'=>'not-an-email','message'=>'Hi']);
+          if (in_array('Invalid email format', \$errs)) { \$pass++; echo '[PASS] bad email\n'; }
+          else { \$fail++; echo '[FAIL] bad email not caught\n'; }
+
+          // Case 4: missing message
+          \$errs = validate(['name'=>'Carol','email'=>'carol@x.com','message'=>'']);
+          if (in_array('Message is required', \$errs)) { \$pass++; echo '[PASS] missing message\n'; }
+          else { \$fail++; echo '[FAIL] missing message not caught\n'; }
+
+          // Case 5: all fields empty
+          \$errs = validate([]);
+          if (count(\$errs) >= 3) { \$pass++; echo '[PASS] all empty\n'; }
+          else { \$fail++; echo '[FAIL] all empty — expected 3+ errors, got '.count(\$errs).'\n'; }
+
+          echo \"---\nPassed: \$pass / \".(\$pass+\$fail).\"\n\";
+          if (\$fail > 0) exit(1);
+          "
+
+      # ── HTML validation ───────────────────────────────────────────────────────
+      - name: Install html-validate
+        run: npm install --global html-validate
+
+      - name: Create html-validate config
+        run: |
+          cat > .htmlvalidate.json << 'EOF'
+          {
+            "extends": ["html-validate:recommended"],
+            "rules": {
+              "no-trailing-whitespace": "off",
+              "long-title": "off",
+              "no-inline-style": "off",
+              "prefer-native-element": "off",
+              "element-permitted-content": "warn"
+            }
+          }
+          EOF
+
+      - name: HTML validation
+        run: |
+          echo "=== HTML validation ==="
+          FAILED=0
+          find business_page -name '*.html' | while read f; do
+            echo "  Validating $f"
+            html-validate "$f" || FAILED=1
+          done
+          if [ "$FAILED" -ne 0 ]; then exit 1; fi
+          echo "HTML validation passed."
+
+      # ── XML / sitemap validation ──────────────────────────────────────────────
+      - name: Install xmllint
+        run: sudo apt-get install -y libxml2-utils
+
+      - name: Sitemap XML validation
+        run: |
+          echo "=== Sitemap XML ==="
+          xmllint --noout business_page/sitemap.xml && echo "sitemap.xml is well-formed."
+
+          # All <loc> entries must start with https://overbytelabs.com
+          DOMAIN="https://overbytelabs.com"
+          BAD=$(grep -oP '(?<=<loc>)[^<]+' business_page/sitemap.xml | grep -v "^$DOMAIN" || true)
+          if [ -n "$BAD" ]; then
+            echo "ERROR: sitemap contains URLs outside $DOMAIN:"
+            echo "$BAD"
+            exit 1
+          fi
+          echo "All sitemap URLs match domain. Passed."
+
+      # ── robots.txt checks ─────────────────────────────────────────────────────
+      - name: robots.txt sanity check
+        run: |
+          echo "=== robots.txt ==="
+          FILE="business_page/robots.txt"
+
+          # Must exist
+          [ -f "$FILE" ] || { echo "ERROR: robots.txt missing"; exit 1; }
+
+          # Must allow root for default agents
+          grep -q "^User-agent: \*" "$FILE" || { echo "ERROR: no wildcard User-agent block"; exit 1; }
+          grep -qP "^Allow: /" "$FILE"       || { echo "ERROR: no Allow: / for wildcard agent"; exit 1; }
+
+          # Must reference sitemap
+          grep -q "^Sitemap:" "$FILE" || echo "WARN: no Sitemap: directive in robots.txt"
+
+          echo "robots.txt passed."
+
+      # ── Summary ──────────────────────────────────────────────────────────────
+      - name: Test summary
+        if: always()
+        run: |
+          echo "Unit test run complete."

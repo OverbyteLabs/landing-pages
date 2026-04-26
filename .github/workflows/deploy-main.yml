@@ -47,3 +47,93 @@ jobs:
         run: |
           echo "Deployed: business_page/"
           echo "URL:      https://$ROOT_DOMAIN"
+
+  # ── Smoke tests ──────────────────────────────────────────────────────────────
+  smoke:
+    name: Smoke tests
+    needs: deploy
+    runs-on: ubuntu-latest
+    env:
+      BASE: https://overbytelabs.com
+
+    steps:
+      - name: Wait for server to reflect changes
+        run: sleep 15
+
+      # ── Homepage ──────────────────────────────────────────────────────────
+      - name: Homepage returns 200
+        run: |
+          STATUS=$(curl -o /dev/null -s -w "%{http_code}" --max-time 15 "$BASE/")
+          echo "Status: $STATUS"
+          [ "$STATUS" = "200" ] || { echo "ERROR: expected 200, got $STATUS"; exit 1; }
+
+      - name: Homepage contains expected title
+        run: |
+          BODY=$(curl -s --max-time 15 "$BASE/")
+          echo "$BODY" | grep -qi "overbyte" \
+            || { echo "ERROR: 'Overbyte' not found in homepage body"; exit 1; }
+          echo "Title/brand text found."
+
+      - name: Homepage contains meta description
+        run: |
+          BODY=$(curl -s --max-time 15 "$BASE/")
+          echo "$BODY" | grep -qi 'name="description"' \
+            || { echo "ERROR: meta description missing"; exit 1; }
+          echo "Meta description present."
+
+      # ── Static assets ────────────────────────────────────────────────────
+      - name: sitemap.xml is accessible and well-formed
+        run: |
+          STATUS=$(curl -o /tmp/sitemap.xml -s -w "%{http_code}" --max-time 15 "$BASE/sitemap.xml")
+          echo "Status: $STATUS"
+          [ "$STATUS" = "200" ] || { echo "ERROR: sitemap.xml returned $STATUS"; exit 1; }
+          sudo apt-get install -y libxml2-utils -qq
+          xmllint --noout /tmp/sitemap.xml && echo "sitemap.xml is well-formed."
+
+      - name: robots.txt is accessible
+        run: |
+          STATUS=$(curl -o /tmp/robots.txt -s -w "%{http_code}" --max-time 15 "$BASE/robots.txt")
+          echo "Status: $STATUS"
+          [ "$STATUS" = "200" ] || { echo "ERROR: robots.txt returned $STATUS"; exit 1; }
+          grep -q "User-agent" /tmp/robots.txt || { echo "ERROR: robots.txt looks empty/wrong"; exit 1; }
+          echo "robots.txt OK."
+
+      # ── Contact form endpoint ────────────────────────────────────────────
+      - name: Contact form rejects GET
+        run: |
+          STATUS=$(curl -o /tmp/form_get.json -s -w "%{http_code}" --max-time 15 "$BASE/default.php")
+          echo "Status: $STATUS"
+          # 200 with {"ok":false,...} OR 405 are both acceptable
+          BODY=$(cat /tmp/form_get.json)
+          echo "Body: $BODY"
+          echo "$BODY" | grep -qi '"ok":false' \
+            || [ "$STATUS" = "405" ] \
+            || { echo "ERROR: unexpected response to GET on contact form"; exit 1; }
+          echo "Contact form GET rejected correctly."
+
+      - name: Contact form rejects empty POST
+        run: |
+          BODY=$(curl -s --max-time 15 -X POST \
+            -H "Content-Type: application/json" \
+            -d '{}' \
+            "$BASE/default.php")
+          echo "Body: $BODY"
+          echo "$BODY" | grep -qi '"ok":false' \
+            || { echo "ERROR: empty POST should return ok:false"; exit 1; }
+          echo "Contact form empty POST validation works."
+
+      - name: Contact form rejects invalid email
+        run: |
+          BODY=$(curl -s --max-time 15 -X POST \
+            -H "Content-Type: application/json" \
+            -d '{"name":"Test","email":"not-an-email","message":"Hello"}' \
+            "$BASE/default.php")
+          echo "Body: $BODY"
+          echo "$BODY" | grep -qi '"ok":false' \
+            || { echo "ERROR: invalid email should return ok:false"; exit 1; }
+          echo "Contact form email validation works."
+
+      # ── Smoke summary ─────────────────────────────────────────────────────
+      - name: Smoke test summary
+        if: always()
+        run: echo "Smoke tests complete for $BASE"
