@@ -1,0 +1,53 @@
+name: Agent — Watch Microsoft Repositories
+
+on:
+  workflow_dispatch:
+    inputs:
+      repos:
+        description: 'Space-separated microsoft/* repos to check (e.g. "vscode TypeScript")'
+        required: false
+        default: "vscode TypeScript playwright"
+      lookback_days:
+        description: 'How many days back to check for changes'
+        required: false
+        default: "7"
+      model:
+        description: 'LLM model to use'
+        required: false
+        default: "gpt-4o-mini"
+
+jobs:
+  watch:
+    name: Check Microsoft repos for changes
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download cli-agent binary
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          gh release download \
+            --repo OverbyteLabs/cli-agent \
+            --pattern "agent-linux-x86_64" \
+            --output agent
+          chmod +x agent
+
+      - name: Run agent task
+        env:
+          AGENT_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          AGENT_ENDPOINT: https://api.openai.com
+          AGENT_MODEL: ${{ inputs.model }}
+          REPOS: ${{ inputs.repos }}
+          LOOKBACK_DAYS: ${{ inputs.lookback_days }}
+        run: |
+          TASK="You are a technical intelligence analyst. Check the following Microsoft GitHub repositories for recent activity: ${REPOS}. For each repo:
+          1. Use http_get to fetch https://api.github.com/repos/microsoft/{repo}/commits?per_page=10 (set Accept: application/vnd.github+json header via bash curl if needed)
+          2. Use http_get to fetch https://api.github.com/repos/microsoft/{repo}/releases?per_page=5
+          3. Use http_get to fetch https://api.github.com/repos/microsoft/{repo}/pulls?state=closed&per_page=5
+          Focus only on activity from the last ${LOOKBACK_DAYS} days. Summarise: new releases, significant commits, merged PRs, and any notable changes. Present findings as a concise report per repository."
+
+          ./agent run \
+            --tools "bash,http_get,python,write_file" \
+            --max-turns 30 \
+            --verbose \
+            --task "$TASK"
