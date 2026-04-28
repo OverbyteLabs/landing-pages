@@ -3,51 +3,61 @@ name: Agent — Watch Microsoft Repositories
 on:
   workflow_dispatch:
     inputs:
-      repos:
-        description: 'Space-separated microsoft/* repos to check (e.g. "vscode TypeScript")'
+      prompt:
+        description: 'Task prompt for Copilot cloud agent'
         required: false
-        default: "vscode TypeScript playwright"
-      lookback_days:
-        description: 'How many days back to check for changes'
+        default: >
+          Check microsoft/vscode, microsoft/TypeScript, and microsoft/playwright
+          for new releases, commits, and merged PRs in the last 7 days using the
+          GitHub REST API. For each repo fetch:
+            - /repos/microsoft/{repo}/releases?per_page=5
+            - /repos/microsoft/{repo}/commits?per_page=10
+            - /repos/microsoft/{repo}/pulls?state=closed&per_page=10
+          Filter results to the past 7 days. Summarise findings per repository
+          (new releases, notable commits, merged PRs) and write a MICROSOFT-WATCH-REPORT.md
+          file in the repo root with the results, then open a pull request.
+      base_branch:
+        description: 'Branch for Copilot to branch from'
         required: false
-        default: "7"
-      model:
-        description: 'LLM model to use'
-        required: false
-        default: "gpt-4o-mini"
+        default: 'master'
 
 jobs:
-  watch:
-    name: Check Microsoft repos for changes
+  trigger-copilot-agent:
+    name: Create Copilot agent task
     runs-on: ubuntu-latest
 
     steps:
-      - name: Download cli-agent binary
+      - name: Create issue and assign to Copilot cloud agent
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
         run: |
-          gh release download \
-            --repo OverbyteLabs/cli-agent \
-            --pattern "agent-linux-x86_64" \
-            --output agent
-          chmod +x agent
+          TITLE="Agent Task: Microsoft Repo Watch $(date -u +%Y-%m-%d)"
+          PROMPT="${{ inputs.prompt }}"
+          BASE="${{ inputs.base_branch }}"
 
-      - name: Run agent task
-        env:
-          AGENT_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          AGENT_ENDPOINT: https://api.openai.com
-          AGENT_MODEL: ${{ inputs.model }}
-          REPOS: ${{ inputs.repos }}
-          LOOKBACK_DAYS: ${{ inputs.lookback_days }}
-        run: |
-          TASK="You are a technical intelligence analyst. Check the following Microsoft GitHub repositories for recent activity: ${REPOS}. For each repo:
-          1. Use http_get to fetch https://api.github.com/repos/microsoft/{repo}/commits?per_page=10 (set Accept: application/vnd.github+json header via bash curl if needed)
-          2. Use http_get to fetch https://api.github.com/repos/microsoft/{repo}/releases?per_page=5
-          3. Use http_get to fetch https://api.github.com/repos/microsoft/{repo}/pulls?state=closed&per_page=5
-          Focus only on activity from the last ${LOOKBACK_DAYS} days. Summarise: new releases, significant commits, merged PRs, and any notable changes. Present findings as a concise report per repository."
+          RESPONSE=$(gh api \
+            --method POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            /repos/OverbyteLabs/landing-pages/issues \
+            --input - <<< "$(jq -n \
+              --arg title "$TITLE" \
+              --arg body "$PROMPT" \
+              --arg base "$BASE" \
+              '{
+                title: $title,
+                body: $body,
+                assignees: ["copilot-swe-agent[bot]"],
+                agent_assignment: {
+                  target_repo: "OverbyteLabs/landing-pages",
+                  base_branch: $base,
+                  custom_instructions: "",
+                  custom_agent: "",
+                  model: ""
+                }
+              }')")
 
-          ./agent run \
-            --tools "bash,http_get,python,write_file" \
-            --max-turns 30 \
-            --verbose \
-            --task "$TASK"
+          ISSUE_URL=$(echo "$RESPONSE" | jq -r '.html_url')
+          ISSUE_NUMBER=$(echo "$RESPONSE" | jq -r '.number')
+          echo "Copilot agent task created: $ISSUE_URL"
+          echo "Issue #$ISSUE_NUMBER — Copilot will open a PR when done."
